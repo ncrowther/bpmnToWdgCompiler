@@ -102,12 +102,15 @@ public class CodeConverter {
 	}
 
 	private static void generateGosubCode(BpmnTask task, String parentName) throws IOException {
-		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 		
-		String gosubStr = "goSub --label " + name;
-		addCode(parentName, gosubStr);
-		
-		parse(task.getOutgoingId(0), parentName);
+		if (task != null) {
+			String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
+			
+			String gosubStr = "goSub --label " + name;
+			addCode(parentName, gosubStr);
+			
+			parse(task.getOutgoingId(0), parentName);
+		}
 	}	
 
 	private static void getTasks(Document doc) {

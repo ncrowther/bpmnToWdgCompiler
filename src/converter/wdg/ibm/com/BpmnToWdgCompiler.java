@@ -117,24 +117,25 @@ public class BpmnToWdgCompiler {
 		BpmnTask taskB = taskMap.get(task.getOutgoingId(1));
 		System.out.println("B: " + taskB);
 
-		StringBuilder beginSubStr = new StringBuilder();
-		generateSubCode(beginSubStr, taskA);
+		generateSubCode(taskA);
 
-		beginSubStr = new StringBuilder();
-		generateSubCode(beginSubStr, taskB);
+		generateSubCode(taskB);
 
 	}
 
-	private static void generateSubCode(StringBuilder beginSubStr, BpmnTask task) throws IOException {
+	private static void generateSubCode(BpmnTask task) throws IOException {
 
-		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
-		beginSubStr.append("beginSub --name " + name);
-		beginSubStr.append("\n");
-		beginSubStr.append("logMessage --message " + name + " --type \"Info\"");
-
-		generateWDGFunctions(task.getOutgoingId(0));
-
-		addFunction(name, beginSubStr.toString());
+		if (task != null) {
+			StringBuilder beginSubStr = new StringBuilder();
+			String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
+			beginSubStr.append("beginSub --name " + name);
+			beginSubStr.append("\n");
+			beginSubStr.append("logMessage --message " + name + " --type \"Info\"");
+	
+			generateWDGFunctions(task.getOutgoingId(0));
+	
+			addFunction(name, beginSubStr.toString());
+		}
 	}
 
 	private static void getTasks(Document doc) {
