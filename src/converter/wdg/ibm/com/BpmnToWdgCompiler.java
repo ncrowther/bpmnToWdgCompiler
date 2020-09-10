@@ -19,13 +19,22 @@ public class BpmnToWdgCompiler {
 
 	private static Map<String, BpmnTask> taskMap = new HashMap<String, BpmnTask>();
 	private static Map<String, List<String>> functionList = new HashMap<String, List<String>>();
-
 	private static String startId = "";
 
 	public static void main(String[] args) {
 
+		String inputFileName= "";
+		
 		try {
-			File inputFile = new File("test.bpmn");
+			
+			if (args.length > 0) {
+				inputFileName = args[0];
+			} else {
+				System.err.println("Please supply a bpmn file");
+				System.exit(1);
+			}
+			
+			File inputFile = new File(inputFileName);
 
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -252,7 +261,7 @@ public class BpmnToWdgCompiler {
 
 	public static void writeWDGFile(Map<String, List<String>> functionList, Map<String, List<String>> generatedCode)
 			throws IOException {
-		String filename = "generatedBotCode.txt";
+		String filename = "data/generated.txt";
 		FileOutputStream outputStream = new FileOutputStream(filename);
 
 		StringBuilder strBuilder = new StringBuilder();
