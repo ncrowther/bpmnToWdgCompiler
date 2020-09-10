@@ -28,6 +28,9 @@ Upon successful execution the WAL code is generated in:
 Back in WDG Studio, create a new WAL File and paste the contents of generated.txt.
 Your code should be ready to run.  
 
+## Bugs and Limitations
+Code is not generated if BPMN process is re-entrant
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
