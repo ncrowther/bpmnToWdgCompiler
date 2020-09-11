@@ -5,6 +5,7 @@ goSub --label InitializeVars
 beginSub --name Populatecustomerdetails
 logMessage --message Populatecustomerdetails --type "Info"
 if --left "${result}" --operator "Is_True"
+// Success path 
 goSub --label DisplayBotComplete
 else
 goSub --label X
@@ -31,6 +32,7 @@ endSub
 beginSub --name SetupEmailConnection
 logMessage --message SetupEmailConnection --type "Info"
 if --left "${result}" --operator "Is_True"
+// Success path 
 goSub --label Populatedate
 else
 goSub --label RunFirefox
