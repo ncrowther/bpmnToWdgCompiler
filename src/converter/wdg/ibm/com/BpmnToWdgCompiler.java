@@ -131,7 +131,8 @@ public class BpmnToWdgCompiler {
 			beginSubStr.append("beginSub --name " + name);
 			beginSubStr.append("\n");
 			beginSubStr.append("logMessage --message " + name + " --type \"Info\"");
-	
+			beginSubStr.append("\n");
+			
 			generateWDGFunctions(task.getOutgoingId(0));
 	
 			addFunction(name, beginSubStr.toString());

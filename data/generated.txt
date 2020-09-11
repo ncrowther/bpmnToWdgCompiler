@@ -8,20 +8,18 @@ if --left "${result}" --operator "Is_True"
 goSub --label DisplayBotComplete
 else
 goSub --label X
-if --left "${result}" --operator "Is_True"
-goSub --label DisplayBotError
-else
-endif
 endif
 
 endSub
 
 beginSub --name DisplayBotComplete
 logMessage --message DisplayBotComplete --type "Info"
+
 endSub
 
 beginSub --name DisplayBotError
 logMessage --message DisplayBotError --type "Info"
+
 endSub
 
 beginSub --name InitializeVars
@@ -34,7 +32,6 @@ beginSub --name SetupEmailConnection
 logMessage --message SetupEmailConnection --type "Info"
 if --left "${result}" --operator "Is_True"
 goSub --label Populatedate
-goSub --label Populatecustomerdetails
 else
 goSub --label RunFirefox
 endif
@@ -43,12 +40,20 @@ endSub
 
 beginSub --name X
 logMessage --message X --type "Info"
+if --left "${result}" --operator "Is_True"
+goSub --label DisplayBotError
+else
+endif
+
 endSub
 
 beginSub --name Populatedate
 logMessage --message Populatedate --type "Info"
+goSub --label Populatecustomerdetails
+
 endSub
 
 beginSub --name RunFirefox
 logMessage --message RunFirefox --type "Info"
+
 endSub

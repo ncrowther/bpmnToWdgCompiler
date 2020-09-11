@@ -109,7 +109,7 @@ public class CodeConverter {
 			String gosubStr = "goSub --label " + name;
 			addCode(parentName, gosubStr);
 			
-			parse(task.getOutgoingId(0), parentName);
+			parse(task.getOutgoingId(0), name);
 		}
 	}	
 
