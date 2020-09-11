@@ -81,33 +81,45 @@ public class CodeConverter {
 	
 	private static void generateGatewayCode(BpmnTask task, String parentName) throws IOException {
 		
-		String ifStr = "if --left \"${result}\" --operator \"Is_True\"";
-		addCode(parentName, ifStr);
 		
 		BpmnTask taskA = taskMap.get(task.getOutgoingId(0));
-		generateGosubCode(taskA, parentName);
-		
-		String elseStr = "else";
-		addCode(parentName, elseStr);
-		
 		BpmnTask taskB = taskMap.get(task.getOutgoingId(1));
-		generateGosubCode(taskB, parentName);	
-
+		
+		boolean successPathA = sequenceMap.containsKey(taskA.incomingId);
+		boolean successPathB = sequenceMap.containsKey(taskB.incomingId);
+		
+		if (successPathA) {
+			generateGosubCode(taskA, parentName, true);		
+			generateGosubCode(taskB, parentName, false);	
+		} else if (successPathB) {
+			generateGosubCode(taskB, parentName, true);		
+			generateGosubCode(taskA, parentName, false);
+		} else {
+			// No success path defined, so just make one up
+			generateGosubCode(taskA, parentName, true);		
+			generateGosubCode(taskB, parentName, false);	
+		}
+		
 		String endifStr = "endif";
 		addCode(parentName, endifStr);
 
 	}
 
-	private static void generateGosubCode(BpmnTask task, String parentName) throws IOException {
+	private static void generateGosubCode(BpmnTask task, String parentName, boolean successPath ) throws IOException {
 		
 		if (task != null) {
 			
-			boolean successPath = sequenceMap.containsKey(task.incomingId);
-			
 			if (successPath) {
+				String ifStr = "if --left \"${result}\" --operator \"Is_True\"";
+				addCode(parentName, ifStr);
 				String commentStr = "// Success path ";
 				addCode(parentName, commentStr);
-			} 
+			} else {
+				String elseStr = "else";
+				addCode(parentName, elseStr);
+				String commentStr = "// Failure path ";
+				addCode(parentName, commentStr);
+			}
 			
 			String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 				

@@ -1,61 +1,60 @@
 defVar --name result --type Boolean --value True
 
-goSub --label InitializeVars
+goSub --label Initialize
 
-beginSub --name Populatecustomerdetails
-logMessage --message Populatecustomerdetails --type "Info"
+beginSub --name Getfollowup
+logMessage --message Getfollowup --type "Info"
+
+endSub
+
+beginSub --name Followupfailed
+logMessage --message Followupfailed --type "Info"
+
+endSub
+
+beginSub --name Insertleaddata
+logMessage --message Insertleaddata --type "Info"
+goSub --label Callodmfollowup
+
+endSub
+
+beginSub --name Failedtoread
+logMessage --message Failedtoread --type "Info"
+
+endSub
+
+beginSub --name Processcsv
+logMessage --message Processcsv --type "Info"
+goSub --label Insertleaddata
+
+endSub
+
+beginSub --name Initialize
+logMessage --message Initialize --type "Info"
+goSub --label Readcsv
+
+endSub
+
+beginSub --name Readcsv
+logMessage --message Readcsv --type "Info"
 if --left "${result}" --operator "Is_True"
 // Success path 
-goSub --label DisplayBotComplete
+goSub --label Processcsv
 else
-goSub --label X
+// Failure path 
+goSub --label Failedtoread
 endif
 
 endSub
 
-beginSub --name DisplayBotComplete
-logMessage --message DisplayBotComplete --type "Info"
-
-endSub
-
-beginSub --name DisplayBotError
-logMessage --message DisplayBotError --type "Info"
-
-endSub
-
-beginSub --name InitializeVars
-logMessage --message InitializeVars --type "Info"
-goSub --label SetupEmailConnection
-
-endSub
-
-beginSub --name SetupEmailConnection
-logMessage --message SetupEmailConnection --type "Info"
+beginSub --name Callodmfollowup
+logMessage --message Callodmfollowup --type "Info"
 if --left "${result}" --operator "Is_True"
 // Success path 
-goSub --label Populatedate
+goSub --label Getfollowup
 else
-goSub --label RunFirefox
+// Failure path 
+goSub --label Followupfailed
 endif
-
-endSub
-
-beginSub --name X
-logMessage --message X --type "Info"
-if --left "${result}" --operator "Is_True"
-goSub --label DisplayBotError
-else
-endif
-
-endSub
-
-beginSub --name Populatedate
-logMessage --message Populatedate --type "Info"
-goSub --label Populatecustomerdetails
-
-endSub
-
-beginSub --name RunFirefox
-logMessage --message RunFirefox --type "Info"
 
 endSub

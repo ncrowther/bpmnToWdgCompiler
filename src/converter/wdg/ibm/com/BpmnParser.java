@@ -1,7 +1,6 @@
 package converter.wdg.ibm.com;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -12,7 +11,6 @@ import org.w3c.dom.NodeList;
 public class BpmnParser {
 
 	private static Map<String, BpmnTask> taskMap = new HashMap<String, BpmnTask>();
-	private static Map<String, List<String>> functionList = new HashMap<String, List<String>>();
 	private static Map<String, String> conditionMap = new HashMap<String, String>();
 	
 	public static Map<String, BpmnTask> getNodes(Document doc) {
