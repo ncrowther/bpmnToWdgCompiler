@@ -8,17 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import org.w3c.dom.Document;
-
 public class BpmnToWdgCompiler {
 
-	private static Map<String, BpmnTask> taskMap = new HashMap<String, BpmnTask>();
 	private static Map<String, List<String>> functionList = new HashMap<String, List<String>>();
 	private static Map<String, List<String>> codeMap;
-	
-	private static String startId = "";
 
 	public static void main(String[] args) {
 
@@ -34,46 +27,34 @@ public class BpmnToWdgCompiler {
 			}
 			
 			File inputFile = new File(inputFileName);
+			
+			BpmnParser bpmnParser = new BpmnParser(inputFile);
 
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(inputFile);
-			doc.getDocumentElement().normalize();
-			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-
-			String taskId = parseBpmn(doc);
-
-			generateWDGFunctions(taskId);
+			String startId = bpmnParser.getStartId();
+			generateWDGFunctions(bpmnParser, startId);
+			
+			codeMap = CodeConverter.generateWDGCode(startId, bpmnParser);
 
 			writeWDGFile(functionList, codeMap);
+			
+			System.out.println("Code generated in ./data/generated.txt");
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static String parseBpmn(Document doc) {
-		// Get the BPMN Start Id
-		startId = BpmnParser.getStartId(doc);
-		taskMap = BpmnParser.getNodes(doc);
-		codeMap = CodeConverter.generateCode(doc);
-		
-		String taskId = startId;
-		return taskId;
-	}
+	private static void generateWDGFunctions(BpmnParser bpmnParser, String taskId) throws IOException {
 
-	private static void generateWDGFunctions(String taskId) throws IOException {
-
-		BpmnTask task = taskMap.get(taskId);
-		System.out.println(task);
+		BpmnTask task = bpmnParser.getTask(taskId);
 
 		if (task != null) {
 			switch (task.getType()) {
 			case TASK:
-				generateTaskCode(task);
+				generateTaskCode(bpmnParser, task);
 				break;
 			case GATEWAY:
-				generateGatewayCode(task);
+				generateGatewayCode(bpmnParser,task);
 				break;
 			default:
 				// code block
@@ -81,7 +62,7 @@ public class BpmnToWdgCompiler {
 		}
 	}
 
-	private static void generateTaskCode(BpmnTask task) throws IOException {
+	private static void generateTaskCode(BpmnParser bpmnParser, BpmnTask task) throws IOException {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.name);
 
 		StringBuilder beginSubStr = new StringBuilder();
@@ -92,7 +73,7 @@ public class BpmnToWdgCompiler {
 		beginSubStr.append("\n");
 		addFunction(name, beginSubStr.toString());
 
-		generateWDGFunctions(task.getOutgoingId(0));
+		generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
 	}
 
 	private static void addFunction(String parentName, String functionStr) {
@@ -105,21 +86,19 @@ public class BpmnToWdgCompiler {
 		functionCode.add(functionStr);
 	}
 
-	private static void generateGatewayCode(BpmnTask task) throws IOException {
+	private static void generateGatewayCode(BpmnParser bpmnParser, BpmnTask task) throws IOException {
 
-		BpmnTask taskA = taskMap.get(task.getOutgoingId(0));
-		System.out.println("A: " + taskA);
+		BpmnTask taskA = bpmnParser.getTask(task.getOutgoingId(0));
 
-		BpmnTask taskB = taskMap.get(task.getOutgoingId(1));
-		System.out.println("B: " + taskB);
+		BpmnTask taskB = bpmnParser.getTask(task.getOutgoingId(1));
 
-		generateSubCode(taskA);
+		generateSubCode(bpmnParser, taskA);
 
-		generateSubCode(taskB);
+		generateSubCode(bpmnParser, taskB);
 
 	}
 
-	private static void generateSubCode(BpmnTask task) throws IOException {
+	private static void generateSubCode(BpmnParser bpmnParser, BpmnTask task) throws IOException {
 
 		if (task != null) {
 			StringBuilder beginSubStr = new StringBuilder();
@@ -129,7 +108,7 @@ public class BpmnToWdgCompiler {
 			beginSubStr.append("logMessage --message " + name + " --type \"Info\"");
 			beginSubStr.append("\n");
 			
-			generateWDGFunctions(task.getOutgoingId(0));
+			generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
 	
 			addFunction(name, beginSubStr.toString());
 		}
@@ -162,8 +141,6 @@ public class BpmnToWdgCompiler {
 		strBuilder.append(code);
 
 		for (String key : functionList.keySet()) {
-			System.out.println("Key: " + key + ", Value: " + generatedCode.get(key));
-
 			List<String> functions = functionList.get(key);
 
 			for (String beginSub : functions) {

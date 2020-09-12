@@ -10,47 +10,30 @@ import org.w3c.dom.Document;
 
 public class CodeConverter {
 	
-	private static Map<String, BpmnTask> taskMap = new HashMap<String, BpmnTask>();	
+	//private static Map<String, BpmnTask> taskMap = new HashMap<String, BpmnTask>();	
 	private static Map<String, List<String>> generatedCode = new HashMap<String, List<String>>();
-	private static Map<String, String> sequenceMap = new HashMap<String, String>();
+	//private static Map<String, String> sequenceMap = new HashMap<String, String>();
 	
-	private static String startId = "";
 	
-	public static Map<String, List<String>> generateCode(Document doc) {
-
-		try {
-			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-			
-			// Get the BPMN Start Id
-			startId = BpmnParser.getStartId(doc);
-			
-			sequenceMap = BpmnParser.getSequenceFlow(doc);
-			
-			taskMap = BpmnParser.getNodes(doc);
-			
-			String taskId = startId;
-			
-			parse(taskId, "root");
-						
+	public static Map<String, List<String>> generateWDGCode(String startId, BpmnParser bpmnParser) {
+		try {		
+			generateCode(bpmnParser, startId, "root");					
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		return generatedCode;
 	}
 
-	private static void parse(String taskId, String parentName) throws IOException {
+	private static void generateCode(BpmnParser bpmnParser, String taskId, String parentName) throws IOException {
 		
-		BpmnTask task = taskMap.get(taskId);
-		System.out.println(task);
-
+		BpmnTask task = bpmnParser.getTask(taskId);
 		if (task != null) {
 			switch (task.getType()) {
 			case TASK:
-				generateTaskCode(task, parentName);
+				generateTaskCode(bpmnParser, task, parentName);
 				break;
 			case GATEWAY:
-				generateGatewayCode(task, parentName);
+				generateGatewayCode(bpmnParser, task, parentName);
 				break;
 			default:
 				// code block
@@ -59,13 +42,13 @@ public class CodeConverter {
 		}
 	}
 
-	private static void generateTaskCode(BpmnTask task, String parentName) throws IOException {
+	private static void generateTaskCode(BpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.name);
 
 		String gosubStr = "goSub --label " + name;
 		addCode(parentName, gosubStr);
 
-	    parse(task.getOutgoingId(0), name);
+	    generateCode(bpmnParser, task.getOutgoingId(0), name);
 		
 	}
 
@@ -79,25 +62,26 @@ public class CodeConverter {
 		functionCode.add(gosubStr);	
 	}
 	
-	private static void generateGatewayCode(BpmnTask task, String parentName) throws IOException {
+	private static void generateGatewayCode(BpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
 		
 		
-		BpmnTask taskA = taskMap.get(task.getOutgoingId(0));
-		BpmnTask taskB = taskMap.get(task.getOutgoingId(1));
+		BpmnTask taskA = bpmnParser.getTask(task.getOutgoingId(0));
+		BpmnTask taskB = bpmnParser.getTask(task.getOutgoingId(1));
 		
+		Map<String, String> sequenceMap = bpmnParser.getSequenceMap();
 		boolean successPathA = sequenceMap.containsKey(taskA.incomingId);
 		boolean successPathB = sequenceMap.containsKey(taskB.incomingId);
 		
 		if (successPathA) {
-			generateGosubCode(taskA, parentName, true);		
-			generateGosubCode(taskB, parentName, false);	
+			generateGosubCode(bpmnParser, taskA, parentName, true);		
+			generateGosubCode(bpmnParser, taskB, parentName, false);	
 		} else if (successPathB) {
-			generateGosubCode(taskB, parentName, true);		
-			generateGosubCode(taskA, parentName, false);
+			generateGosubCode(bpmnParser, taskB, parentName, true);		
+			generateGosubCode(bpmnParser, taskA, parentName, false);
 		} else {
 			// No success path defined, so just make one up
-			generateGosubCode(taskA, parentName, true);		
-			generateGosubCode(taskB, parentName, false);	
+			generateGosubCode(bpmnParser, taskA, parentName, true);		
+			generateGosubCode(bpmnParser, taskB, parentName, false);	
 		}
 		
 		String endifStr = "endif";
@@ -105,7 +89,7 @@ public class CodeConverter {
 
 	}
 
-	private static void generateGosubCode(BpmnTask task, String parentName, boolean successPath ) throws IOException {
+	private static void generateGosubCode(BpmnParser bpmnParser, BpmnTask task, String parentName, boolean successPath ) throws IOException {
 		
 		if (task != null) {
 			
@@ -126,7 +110,7 @@ public class CodeConverter {
 			String gosubStr = "goSub --label " + name;
 			addCode(parentName, gosubStr);
 			
-			parse(task.getOutgoingId(0), name);
+			generateCode(bpmnParser, task.getOutgoingId(0), name);
 		}
 	}	
 }
