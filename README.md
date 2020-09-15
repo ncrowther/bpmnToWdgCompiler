@@ -29,7 +29,7 @@ Back in WDG Studio, create a new WAL File and paste the contents of generated.tx
 Your code should be ready to run.  
 
 ## Bugs and Limitations
-Code is not generated if BPMN process is re-entrant
+Code is not generated if BPMN process is re-entrant.  
 BPMN process must be valid and contain only Tasks and Gateways
 
 ## Contributing
