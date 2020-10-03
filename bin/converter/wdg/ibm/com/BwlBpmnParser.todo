@@ -56,7 +56,7 @@ public class BpmnParser {
 
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
-			// System.out.println("\nCurrent Element :" + nNode.getNodeName());
+			System.out.println("\nCurrent Element :" + nNode.getNodeName());
 
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nNode;
@@ -64,8 +64,8 @@ public class BpmnParser {
 				String name = eElement.getAttribute("name");
 				String id = eElement.getAttribute("id");
 
-				// System.out.println("Name :" + name);
-				// System.out.println("Id :" + id);
+				System.out.println("Name :" + name);
+				System.out.println("Id :" + id);
 
 				NodeList childNodes = eElement.getChildNodes();
 				getNodeAttributes(TaskType.TASK, name, id, childNodes);
@@ -175,6 +175,26 @@ public class BpmnParser {
 
 		taskMap.put(incomingId, task);
 	}
+	
+	private void getTaskAttributes(TaskType type, String name, String id, NodeList childNodes) {
+
+		BpmnTask task = new BpmnTask();
+
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node link = childNodes.item(i);
+
+			if (link.getNodeType() == Node.ELEMENT_NODE) {
+				Element linkNode = (Element) link;
+				String documentation = linkNode.getTextContent();
+			}
+		}
+
+		task.id = id;
+		task.type = type;
+		task.name = name;
+
+		taskMap.put(incomingId, task);
+	}	
 	
 	private void getSequenceAttributes(String name, String id, NodeList childNodes) {
 

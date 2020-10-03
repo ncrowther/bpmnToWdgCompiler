@@ -7,7 +7,7 @@ public class BpmnTask {
 	String id;
 	TaskType type;
 	String name;
-	String incomingId;
+    List<String> incomingIds = new ArrayList<String>();
     List<String> outgoingIds = new ArrayList<String>();
     
 	public String getId() {
@@ -30,11 +30,13 @@ public class BpmnTask {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getIncomingId() {
-		return incomingId;
-	}
-	public void setIncomingId(String incomingId) {
-		this.incomingId = incomingId;
+	
+	public String getIncomingId(int index) {
+		return incomingIds.get(index);
+	}	
+
+	public void addIncomingId(String incomingId) {
+		this.incomingIds.add(incomingId);
 	}
 
 	public String getOutgoingId(int index) {
@@ -47,7 +49,7 @@ public class BpmnTask {
 
 	@Override
 	public String toString() {
-		return "BpmnTask [id=" + id + ", type=" + type + ", name=" + name + ", incomingId=" + incomingId
+		return "BpmnTask [id=" + id + ", type=" + type + ", name=" + name + ", incomingIds=" + incomingIds
 				+ ", outgoingIds=" + outgoingIds + "]";
 	}
 

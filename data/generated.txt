@@ -1,60 +1,78 @@
 defVar --name result --type Boolean --value True
 
-goSub --label Initialize
+goSub --label GetTicketsFromInbox
 
-beginSub --name Getfollowup
-logMessage --message Getfollowup --type "Info"
-
-endSub
-
-beginSub --name Followupfailed
-logMessage --message Followupfailed --type "Info"
+beginSub --name NotifyCustomer
+logMessage --message NotifyCustomer --type "Info"
+goSub --label GetNextTicket
 
 endSub
 
-beginSub --name Insertleaddata
-logMessage --message Insertleaddata --type "Info"
-goSub --label Callodmfollowup
+beginSub --name OpenBarclaycard
+logMessage --message OpenBarclaycard --type "Info"
+goSub --label EnterTicketNumber
 
 endSub
 
-beginSub --name Failedtoread
-logMessage --message Failedtoread --type "Info"
+beginSub --name GetTicketNumber
+logMessage --message GetTicketNumber --type "Info"
+goSub --label EnterTicketNumberIntoSmart
 
 endSub
 
-beginSub --name Processcsv
-logMessage --message Processcsv --type "Info"
-goSub --label Insertleaddata
+beginSub --name GetTicketsFromInbox
+logMessage --message GetTicketsFromInbox --type "Info"
+goSub --label OpenTicketsInExcel
 
 endSub
 
-beginSub --name Initialize
-logMessage --message Initialize --type "Info"
-goSub --label Readcsv
+beginSub --name ViewTicketAndRequeue
+logMessage --message ViewTicketAndRequeue --type "Info"
+goSub --label NotifyCustomer
 
 endSub
 
-beginSub --name Readcsv
-logMessage --message Readcsv --type "Info"
+beginSub --name BarlaycardAcceptPayment
+logMessage --message BarlaycardAcceptPayment --type "Info"
+goSub --label ViewTicketAndRequeue
+
+endSub
+
+beginSub --name EnterTicketNumber
+logMessage --message EnterTicketNumber --type "Info"
+goSub --label CancelPendingPayment
+
+endSub
+
+beginSub --name EnterTicketNumberIntoSmart
+logMessage --message EnterTicketNumberIntoSmart --type "Info"
 if --left "${result}" --operator "Is_True"
 // Success path 
-goSub --label Processcsv
+goSub --label BarlaycardAcceptPayment
 else
 // Failure path 
-goSub --label Failedtoread
+goSub --label OpenBarclaycard
 endif
 
 endSub
 
-beginSub --name Callodmfollowup
-logMessage --message Callodmfollowup --type "Info"
+beginSub --name OpenTicketsInExcel
+logMessage --message OpenTicketsInExcel --type "Info"
+goSub --label GetNextTicket
+
+endSub
+
+beginSub --name GetNextTicket
+logMessage --message GetNextTicket --type "Info"
 if --left "${result}" --operator "Is_True"
 // Success path 
-goSub --label Getfollowup
-else
-// Failure path 
-goSub --label Followupfailed
+goSub --label GetTicketNumber
 endif
+
+endSub
+
+beginSub --name CancelPendingPayment
+logMessage --message CancelPendingPayment --type "Info"
+goSub --label GetNextTicket
 
 endSub

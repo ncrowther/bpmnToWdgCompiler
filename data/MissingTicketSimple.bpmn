@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="_2020100309470" targetNamespace="http://www.bizagi.com/definitions/_2020100309470" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">
+  <collaboration id="Id_eee2104d-61b9-48ab-aaff-357ba98e71d0" name="Diagram 1">
+    <participant id="Id_64cce1db-f368-41a7-843c-1fe1754698f5" name="Untitled 2" processRef="Id_4676595b-baac-4b63-801b-b1ab0daaedb9" />
+  </collaboration>
+  <process id="Id_4676595b-baac-4b63-801b-b1ab0daaedb9" name="Untitled 2">
+    <property id="Property_1" name="ticket" itemSubjectRef="ItemDefinition_1" />
+    <property id="Property_2" name="ExcelList" itemSubjectRef="ItemDefinition_1" />
+    <property id="Property_3" name="result" itemSubjectRef="ItemDefinition_2" />
+    <endEvent id="Id_8654e9d3-4d5f-4db9-a500-8a47002fc933" name="End">
+      <incoming>Id_1339399e-792c-4f99-804a-9f52593fe89e</incoming>
+    </endEvent>
+    <exclusiveGateway id="Id_7c73f3b1-372f-4fed-8897-e1a30bad6e18" name="Tickets" gatewayDirection="Diverging">
+      <incoming>Id_54ef3458-9da9-4135-8d57-2eb6c49869d0</incoming>
+      <outgoing>Id_aef934b6-f7b3-43d2-8196-ecbebe2a4916</outgoing>
+      <outgoing>Id_1339399e-792c-4f99-804a-9f52593fe89e</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="Id_45dd48a2-a343-4a7e-a4ad-b40ec53bf150" name="" sourceRef="Id_6ac01eef-050b-4b42-82c8-29da33f20b35" targetRef="Id_b0af3c62-bba3-4920-9c5f-8024eb50ada1" />
+    <sequenceFlow id="Id_f37da9f9-717b-4372-85b5-537cb2b3e26b" name="" sourceRef="Id_b0af3c62-bba3-4920-9c5f-8024eb50ada1" targetRef="Id_e2cb6fe8-e442-476c-92a5-e9f889eaf371" />
+    <sequenceFlow id="Id_4918a327-1d1a-4121-b5bc-cd550baba0f0" name="" sourceRef="Id_e2cb6fe8-e442-476c-92a5-e9f889eaf371" targetRef="Id_29789ea5-c0d6-4bc6-b917-047afa989976" />
+    <sequenceFlow id="Id_40d558a1-bc5d-4c65-b7bc-60865ec89c1b" name="" sourceRef="Id_66f98be3-6642-4be7-82ea-165254f5509c" targetRef="Id_64f8ef8c-883a-4117-a2ed-8125bb9b00c7" />
+    <sequenceFlow id="Id_f7029e46-6203-4ead-9236-c3e19326640b" name="" sourceRef="Id_d503c7d7-346f-4f84-9cca-95e011c902d5" targetRef="Id_35c70ca2-0718-4a4e-b062-fb3a82f781f5" />
+    <sequenceFlow id="Id_aef934b6-f7b3-43d2-8196-ecbebe2a4916" name="" sourceRef="Id_7c73f3b1-372f-4fed-8897-e1a30bad6e18" targetRef="Id_66f98be3-6642-4be7-82ea-165254f5509c" />
+    <sequenceFlow id="Id_54ef3458-9da9-4135-8d57-2eb6c49869d0" name="" sourceRef="Id_29789ea5-c0d6-4bc6-b917-047afa989976" targetRef="Id_7c73f3b1-372f-4fed-8897-e1a30bad6e18" />
+    <sequenceFlow id="Id_cc6af8a3-af02-4192-b852-628433556e50" name="" sourceRef="Id_35c70ca2-0718-4a4e-b062-fb3a82f781f5" targetRef="Id_8854c07d-277c-46e7-813c-cc532b737065" />
+    <sequenceFlow id="Id_25c4b479-6453-4eb8-bcc5-a89d3a5eb725" name="" sourceRef="Id_64f8ef8c-883a-4117-a2ed-8125bb9b00c7" targetRef="Id_d503c7d7-346f-4f84-9cca-95e011c902d5" />
+    <sequenceFlow id="Id_1339399e-792c-4f99-804a-9f52593fe89e" name="" sourceRef="Id_7c73f3b1-372f-4fed-8897-e1a30bad6e18" targetRef="Id_8654e9d3-4d5f-4db9-a500-8a47002fc933" />
+    <sequenceFlow id="Id_8739ce8e-4e97-4104-9a03-dd401012eb19" name="" sourceRef="Id_8854c07d-277c-46e7-813c-cc532b737065" targetRef="Id_29789ea5-c0d6-4bc6-b917-047afa989976" />
+    <startEvent id="Id_6ac01eef-050b-4b42-82c8-29da33f20b35" name="Start">
+      <outgoing>Id_45dd48a2-a343-4a7e-a4ad-b40ec53bf150</outgoing>
+    </startEvent>
+    <task id="Id_b0af3c62-bba3-4920-9c5f-8024eb50ada1" name="Get Tickets from inbox">
+      <incoming>Id_45dd48a2-a343-4a7e-a4ad-b40ec53bf150</incoming>
+      <outgoing>Id_f37da9f9-717b-4372-85b5-537cb2b3e26b</outgoing>
+    </task>
+    <task id="Id_e2cb6fe8-e442-476c-92a5-e9f889eaf371" name="Open tickets in Excel">
+      <incoming>Id_f37da9f9-717b-4372-85b5-537cb2b3e26b</incoming>
+      <outgoing>Id_4918a327-1d1a-4121-b5bc-cd550baba0f0</outgoing>
+    </task>
+    <task id="Id_66f98be3-6642-4be7-82ea-165254f5509c" name="Get ticket Number">
+      <incoming>Id_aef934b6-f7b3-43d2-8196-ecbebe2a4916</incoming>
+      <outgoing>Id_40d558a1-bc5d-4c65-b7bc-60865ec89c1b</outgoing>
+    </task>
+    <task id="Id_64f8ef8c-883a-4117-a2ed-8125bb9b00c7" name="Enter Ticket number into SMART">
+      <incoming>Id_40d558a1-bc5d-4c65-b7bc-60865ec89c1b</incoming>
+      <outgoing>Id_25c4b479-6453-4eb8-bcc5-a89d3a5eb725</outgoing>
+    </task>
+    <task id="Id_d503c7d7-346f-4f84-9cca-95e011c902d5" name="Barlaycard accept payment ">
+      <incoming>Id_25c4b479-6453-4eb8-bcc5-a89d3a5eb725</incoming>
+      <outgoing>Id_f7029e46-6203-4ead-9236-c3e19326640b</outgoing>
+    </task>
+    <task id="Id_8854c07d-277c-46e7-813c-cc532b737065" name="Notify Customer">
+      <incoming>Id_cc6af8a3-af02-4192-b852-628433556e50</incoming>
+      <outgoing>Id_8739ce8e-4e97-4104-9a03-dd401012eb19</outgoing>
+    </task>
+    <task id="Id_29789ea5-c0d6-4bc6-b917-047afa989976" name="Get next ticket">
+      <incoming>Id_4918a327-1d1a-4121-b5bc-cd550baba0f0</incoming>
+      <incoming>Id_8739ce8e-4e97-4104-9a03-dd401012eb19</incoming>
+      <outgoing>Id_54ef3458-9da9-4135-8d57-2eb6c49869d0</outgoing>
+    </task>
+    <task id="Id_35c70ca2-0718-4a4e-b062-fb3a82f781f5" name="View ticket and Requeue">
+      <incoming>Id_f7029e46-6203-4ead-9236-c3e19326640b</incoming>
+      <outgoing>Id_cc6af8a3-af02-4192-b852-628433556e50</outgoing>
+    </task>
+  </process>
+  <itemDefinition id="ItemDefinition_1" structureRef="Text" />
+  <itemDefinition id="ItemDefinition_2" structureRef="Bool" />
+  <BPMNDiagram id="Diagram_b41e39fa-d69a-4f5d-94b5-695f32e455e6" xmlns="http://www.omg.org/spec/BPMN/20100524/DI">
+    <BPMNPlane id="DiagramElement_2a4212a6-2ce4-48be-915d-98bb89cb7f0a" bpmnElement="Id_eee2104d-61b9-48ab-aaff-357ba98e71d0">
+      <BPMNShape id="DiagramElement_de7ace77-ab63-4d73-9fad-1dc1015a7d4a" bpmnElement="Id_64cce1db-f368-41a7-843c-1fe1754698f5">
+        <Bounds x="12" y="12" width="1377" height="344" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_1c088082-1fb1-4384-9af4-a511e73e16a0" bpmnElement="Id_6ac01eef-050b-4b42-82c8-29da33f20b35">
+        <Bounds x="76" y="148" width="64" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_cac48525-6aae-406b-a0ee-94dc7edd0410" bpmnElement="Id_b0af3c62-bba3-4920-9c5f-8024eb50ada1">
+        <Bounds x="176" y="148" width="77" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_368065c5-4180-4365-98be-2d3336b6b405" bpmnElement="Id_e2cb6fe8-e442-476c-92a5-e9f889eaf371">
+        <Bounds x="326" y="148" width="77" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_1fe25082-e542-45c2-a94b-6a006ab7c578" bpmnElement="Id_66f98be3-6642-4be7-82ea-165254f5509c">
+        <Bounds x="620" y="24" width="77" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_c7cea313-ea26-4eb5-9205-c422a19aea95" bpmnElement="Id_64f8ef8c-883a-4117-a2ed-8125bb9b00c7">
+        <Bounds x="780" y="24" width="77" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_f35e7974-4a55-40c8-a83d-cda38758aa46" bpmnElement="Id_d503c7d7-346f-4f84-9cca-95e011c902d5">
+        <Bounds x="962" y="24" width="77" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_c72f6835-4b93-47da-a420-bcca3a440196" bpmnElement="Id_8854c07d-277c-46e7-813c-cc532b737065">
+        <Bounds x="1300" y="24" width="77" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_e48edb95-b2de-4a03-89cd-db32f2649a18" bpmnElement="Id_29789ea5-c0d6-4bc6-b917-047afa989976">
+        <Bounds x="476" y="148" width="77" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_3998ce68-bbf8-4bf8-98ed-d9f5f625900c" bpmnElement="Id_35c70ca2-0718-4a4e-b062-fb3a82f781f5">
+        <Bounds x="1150" y="24" width="77" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_637a90f5-34d1-45bc-aa15-d7113868d7de" bpmnElement="Id_7c73f3b1-372f-4fed-8897-e1a30bad6e18">
+        <Bounds x="626" y="148" width="64" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNShape id="DiagramElement_12abe03c-680e-49e1-bb19-d05b956175a1" bpmnElement="Id_8654e9d3-4d5f-4db9-a500-8a47002fc933">
+        <Bounds x="800" y="148" width="64" height="64" xmlns="http://www.omg.org/spec/DD/20100524/DC" />
+      </BPMNShape>
+      <BPMNEdge id="DiagramElement_04c37c5d-23cb-44a8-b4dc-a4e4d7c355c2" bpmnElement="Id_45dd48a2-a343-4a7e-a4ad-b40ec53bf150">
+        <waypoint x="148" y="316" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="234" y="316" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_694dd415-8168-4fab-ad2f-01370d1653ff" bpmnElement="Id_f37da9f9-717b-4372-85b5-537cb2b3e26b">
+        <waypoint x="311" y="316" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="334" y="316" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_8a34962a-1081-4bb5-b038-5452d3e4dd3d" bpmnElement="Id_4918a327-1d1a-4121-b5bc-cd550baba0f0">
+        <waypoint x="511" y="316" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="384" y="466" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_1100d57c-8eda-4812-9cc9-3d720f94684e" bpmnElement="Id_40d558a1-bc5d-4c65-b7bc-60865ec89c1b">
+        <waypoint x="661" y="316" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="734" y="316" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_ae6eaa23-8871-414a-8d28-68efdb31057f" bpmnElement="Id_f7029e46-6203-4ead-9236-c3e19326640b">
+        <waypoint x="961" y="316" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="1192" y="-96" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_285e4d12-e7f1-4e20-83c8-bfc5e8877b2e" bpmnElement="Id_aef934b6-f7b3-43d2-8196-ecbebe2a4916">
+        <waypoint x="598" y="466" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="622" y="348" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_9c458e0f-92d3-4a13-9174-4c4ae90e37f5" bpmnElement="Id_54ef3458-9da9-4135-8d57-2eb6c49869d0">
+        <waypoint x="625" y="128" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="698" y="128" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_622239a3-111c-4a20-8945-14c866abb9dd" bpmnElement="Id_cc6af8a3-af02-4192-b852-628433556e50">
+        <waypoint x="1269" y="-96" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="1302" y="4" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_4c715fc5-98ce-408a-b70e-9e5e7b71c65a" bpmnElement="Id_25c4b479-6453-4eb8-bcc5-a89d3a5eb725">
+        <waypoint x="869" y="170" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="1052" y="170" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_cbba666b-02c0-420f-b3b3-4f91733a0144" bpmnElement="Id_1339399e-792c-4f99-804a-9f52593fe89e">
+        <waypoint x="702" y="192" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="1319" y="192" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_79d71e1b-bcf9-44c6-8912-723f32ab76f5" bpmnElement="Id_8739ce8e-4e97-4104-9a03-dd401012eb19">
+        <waypoint x="1389" y="68" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="1406" y="68" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="1406" y="247" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="526" y="247" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <waypoint x="526" y="224" xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      </BPMNEdge>
+    </BPMNPlane>
+  </BPMNDiagram>
+</definitions>

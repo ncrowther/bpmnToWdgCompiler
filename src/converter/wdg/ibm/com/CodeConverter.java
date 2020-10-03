@@ -3,8 +3,10 @@ package converter.wdg.ibm.com;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 
@@ -12,10 +14,10 @@ public class CodeConverter {
 	
 	//private static Map<String, BpmnTask> taskMap = new HashMap<String, BpmnTask>();	
 	private static Map<String, List<String>> generatedCode = new HashMap<String, List<String>>();
-	//private static Map<String, String> sequenceMap = new HashMap<String, String>();
+	private static Set<String> generatedSet = new HashSet<String>();
 	
 	
-	public static Map<String, List<String>> generateWDGCode(String startId, BpmnParser bpmnParser) {
+	public static Map<String, List<String>> generateWDGCode(String startId, WdgBpmnParser bpmnParser) {
 		try {		
 			generateCode(bpmnParser, startId, "root");					
 		} catch (Exception e) {
@@ -24,10 +26,13 @@ public class CodeConverter {
 		return generatedCode;
 	}
 
-	private static void generateCode(BpmnParser bpmnParser, String taskId, String parentName) throws IOException {
+	private static void generateCode(WdgBpmnParser bpmnParser, String taskId, String parentName) throws IOException {
 		
 		BpmnTask task = bpmnParser.getTask(taskId);
 		if (task != null) {
+			
+			System.out.println("**GENERATING CODE FOR " + task.name);
+			
 			switch (task.getType()) {
 			case TASK:
 				generateTaskCode(bpmnParser, task, parentName);
@@ -42,13 +47,21 @@ public class CodeConverter {
 		}
 	}
 
-	private static void generateTaskCode(BpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
+	private static void generateTaskCode(WdgBpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.name);
 
 		String gosubStr = "goSub --label " + name;
 		addCode(parentName, gosubStr);
 
-	    generateCode(bpmnParser, task.getOutgoingId(0), name);
+		String outgoingId = task.getOutgoingId(0);
+		
+		if (generatedSet.contains(outgoingId)) {
+			return;
+		} else {
+			generatedSet.add(outgoingId);
+		}
+		
+	    generateCode(bpmnParser, outgoingId, name);
 		
 	}
 
@@ -62,15 +75,15 @@ public class CodeConverter {
 		functionCode.add(gosubStr);	
 	}
 	
-	private static void generateGatewayCode(BpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
+	private static void generateGatewayCode(WdgBpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
 		
 		
 		BpmnTask taskA = bpmnParser.getTask(task.getOutgoingId(0));
 		BpmnTask taskB = bpmnParser.getTask(task.getOutgoingId(1));
 		
 		Map<String, String> sequenceMap = bpmnParser.getSequenceMap();
-		boolean successPathA = sequenceMap.containsKey(taskA.incomingId);
-		boolean successPathB = sequenceMap.containsKey(taskB.incomingId);
+		boolean successPathA = (taskA != null) ? sequenceMap.containsKey(taskA.getIncomingId(0)) : false;
+		boolean successPathB = (taskB != null) ? sequenceMap.containsKey(taskB.getIncomingId(0)) : false;
 		
 		if (successPathA) {
 			generateGosubCode(bpmnParser, taskA, parentName, true);		
@@ -89,7 +102,7 @@ public class CodeConverter {
 
 	}
 
-	private static void generateGosubCode(BpmnParser bpmnParser, BpmnTask task, String parentName, boolean successPath ) throws IOException {
+	private static void generateGosubCode(WdgBpmnParser bpmnParser, BpmnTask task, String parentName, boolean successPath ) throws IOException {
 		
 		if (task != null) {
 			

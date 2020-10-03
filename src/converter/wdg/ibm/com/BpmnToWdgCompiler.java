@@ -5,14 +5,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BpmnToWdgCompiler {
 
 	private static Map<String, List<String>> functionList = new HashMap<String, List<String>>();
 	private static Map<String, List<String>> codeMap;
-
+	private static Set<String> generatedCode = new HashSet<String>();
+	
 	public static void main(String[] args) {
 
 		String inputFileName= "";
@@ -25,10 +28,12 @@ public class BpmnToWdgCompiler {
 				System.err.println("Please supply a bpmn file");
 				System.exit(1);
 			}
+
+			System.out.println("Processing " + inputFileName);
 			
 			File inputFile = new File(inputFileName);
 			
-			BpmnParser bpmnParser = new BpmnParser(inputFile);
+			WdgBpmnParser bpmnParser = new WdgBpmnParser(inputFile);
 
 			String startId = bpmnParser.getStartId();
 			generateWDGFunctions(bpmnParser, startId);
@@ -44,11 +49,18 @@ public class BpmnToWdgCompiler {
 		}
 	}
 
-	private static void generateWDGFunctions(BpmnParser bpmnParser, String taskId) throws IOException {
+	private static void generateWDGFunctions(WdgBpmnParser bpmnParser, String taskId) throws IOException {
 
 		BpmnTask task = bpmnParser.getTask(taskId);
 
 		if (task != null) {
+			
+			if (generatedCode.contains(task.id)) {
+				return;
+			} else {
+				generatedCode.add(task.id);
+			}
+			
 			switch (task.getType()) {
 			case TASK:
 				generateTaskCode(bpmnParser, task);
@@ -62,7 +74,7 @@ public class BpmnToWdgCompiler {
 		}
 	}
 
-	private static void generateTaskCode(BpmnParser bpmnParser, BpmnTask task) throws IOException {
+	private static void generateTaskCode(WdgBpmnParser bpmnParser, BpmnTask task) throws IOException {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.name);
 
 		StringBuilder beginSubStr = new StringBuilder();
@@ -86,7 +98,7 @@ public class BpmnToWdgCompiler {
 		functionCode.add(functionStr);
 	}
 
-	private static void generateGatewayCode(BpmnParser bpmnParser, BpmnTask task) throws IOException {
+	private static void generateGatewayCode(WdgBpmnParser bpmnParser, BpmnTask task) throws IOException {
 
 		BpmnTask taskA = bpmnParser.getTask(task.getOutgoingId(0));
 
@@ -98,7 +110,7 @@ public class BpmnToWdgCompiler {
 
 	}
 
-	private static void generateSubCode(BpmnParser bpmnParser, BpmnTask task) throws IOException {
+	private static void generateSubCode(WdgBpmnParser bpmnParser, BpmnTask task) throws IOException {
 
 		if (task != null) {
 			StringBuilder beginSubStr = new StringBuilder();
