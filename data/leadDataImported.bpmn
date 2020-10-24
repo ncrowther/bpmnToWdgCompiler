@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:ns2="http://www.ibm.com/bpm/Extensions" xmlns:ns3="http://www.ibm.com/xmlns/prod/bpm/bpmn/ext/process" xmlns:ns4="http://www.omg.org/spec/DD/20100524/DI" xmlns:ns5="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:ns6="http://www.omg.org/spec/DD/20100524/DC" id="bpmn-99f0052c-30a8-4d33-a3f8-bfde76326748" targetNamespace="http://www.ibm.com/WebSphere/bpm/BlueworksLive/41ece48a6f-ece58008" exporter="http://www.ibm.com/WebSphere/bpm/BlueworksLive" exporterVersion="2.0" xmlns:bwl0="http://www.ibm.com/WebSphere/bpm/BlueworksLive/Glossaries" xmlns:res="http://www.ibm.com/WebSphere/bpm/BlueworksLive/Resources" xmlns:io="IBM_Cloud" xmlns:tns="http://www.ibm.com/WebSphere/bpm/BlueworksLive/41ece48a6f-ece58008">
+    <import namespace="http://www.ibm.com/WebSphere/bpm/BlueworksLive/Glossaries" location="../Glossaries.bpmn" importType="http://www.omg.org/spec/BPMN/20100524/MODEL"/>
+    <import namespace="http://www.ibm.com/WebSphere/bpm/BlueworksLive/Resources" location="../Resources.bpmn" importType="http://www.omg.org/spec/BPMN/20100524/MODEL"/>
+    <import namespace="IBM_Cloud" location="../InputOutput.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+    <process processType="Private" isExecutable="false" name="leadDataImported" id="bpmn-446df544-ad43-49ca-8502-64b897e6a659">
+        <extensionElements>
+            <ns2:bpmAttributes>
+                <ns2:milestones id="bpmn-893a27b3-1889-47b4-87aa-385cb947196d">
+                    <ns2:milestone name="Milestone" id="bpmn-a2a88914-42e5-4f99-ab8f-7ddf1d36dcfb">
+                        <flowNodeRef>bpmn-1db0f960-8452-4335-8177-eed6e7be4165</flowNodeRef>
+                        <flowNodeRef>bpmn-e5d968e3-304a-4e3d-ad1a-cf16c804389c</flowNodeRef>
+                        <flowNodeRef>bpmn-68cdc49f-a0d8-4318-858f-55f5e68911c7</flowNodeRef>
+                        <flowNodeRef>bpmn-c258abf0-b176-4d96-b289-1f4769ea64ab</flowNodeRef>
+                        <flowNodeRef>bpmn-9e2a7e71-51fc-4042-8daa-05644ebc79ac</flowNodeRef>
+                        <flowNodeRef>bpmn-631509b9-9347-4c04-9c13-c4a7a6c68f99</flowNodeRef>
+                        <flowNodeRef>bpmn-6d687544-1840-4729-8fe6-4e087ffdb80e</flowNodeRef>
+                        <flowNodeRef>bpmn-34e57490-8b62-4ccd-b9f4-672079e1154e</flowNodeRef>
+                        <flowNodeRef>bpmn-bdcbd037-95ae-46d2-8cc1-2873b53dc4e5</flowNodeRef>
+                        <flowNodeRef>bpmn-6ab8e286-df8e-43f7-918b-67f695093fdc</flowNodeRef>
+                        <flowNodeRef>bpmn-7a8d206f-a6bb-48ba-b6f3-d7f643a1239a</flowNodeRef>
+                        <flowNodeRef>bpmn-f75acf07-a9a8-42fd-9ece-5edfa97285cb</flowNodeRef>
+                    </ns2:milestone>
+                </ns2:milestones>
+                <ns2:properties/>
+            </ns2:bpmAttributes>
+        </extensionElements>
+        <laneSet id="bpmn-376386fe-dd9c-42a8-b81c-103d0bf10e2d"/>
+        <sequenceFlow sourceRef="bpmn-1db0f960-8452-4335-8177-eed6e7be4165" targetRef="bpmn-e5d968e3-304a-4e3d-ad1a-cf16c804389c" name="" id="bpmn-2f1b1c8a-da49-4148-9938-184cf629ff25"/>
+        <sequenceFlow sourceRef="bpmn-e5d968e3-304a-4e3d-ad1a-cf16c804389c" targetRef="bpmn-68cdc49f-a0d8-4318-858f-55f5e68911c7" name="" id="bpmn-ee0bec92-e3b9-42d9-80bc-886227a71ebb"/>
+        <sequenceFlow sourceRef="bpmn-68cdc49f-a0d8-4318-858f-55f5e68911c7" targetRef="bpmn-c258abf0-b176-4d96-b289-1f4769ea64ab" name="" id="bpmn-acb30a4b-059b-4cf7-a977-77dbcc2ca42f"/>
+        <sequenceFlow sourceRef="bpmn-c258abf0-b176-4d96-b289-1f4769ea64ab" targetRef="bpmn-9e2a7e71-51fc-4042-8daa-05644ebc79ac" name="Fail" id="bpmn-648eb94b-9ed5-46fe-b359-ee04d0338f7d"/>
+        <sequenceFlow sourceRef="bpmn-9e2a7e71-51fc-4042-8daa-05644ebc79ac" targetRef="bpmn-631509b9-9347-4c04-9c13-c4a7a6c68f99" name="" id="bpmn-f646f324-3399-45fc-8837-21a45f690f8a"/>
+        <sequenceFlow sourceRef="bpmn-c258abf0-b176-4d96-b289-1f4769ea64ab" targetRef="bpmn-6d687544-1840-4729-8fe6-4e087ffdb80e" name="OK" id="bpmn-980e0a3a-5767-48bd-9cb8-670ed7483ef0"/>
+        <sequenceFlow sourceRef="bpmn-6d687544-1840-4729-8fe6-4e087ffdb80e" targetRef="bpmn-34e57490-8b62-4ccd-b9f4-672079e1154e" name="" id="bpmn-83bb35c2-24fe-4a5a-b818-7bbf29d34ca2"/>
+        <sequenceFlow sourceRef="bpmn-34e57490-8b62-4ccd-b9f4-672079e1154e" targetRef="bpmn-bdcbd037-95ae-46d2-8cc1-2873b53dc4e5" name="" id="bpmn-baa6ae9c-5e45-4251-96ad-cf3179a96a59"/>
+        <sequenceFlow sourceRef="bpmn-bdcbd037-95ae-46d2-8cc1-2873b53dc4e5" targetRef="bpmn-6ab8e286-df8e-43f7-918b-67f695093fdc" name="" id="bpmn-36d8c797-20d8-41e5-9737-cd13b2092405"/>
+        <sequenceFlow sourceRef="bpmn-6ab8e286-df8e-43f7-918b-67f695093fdc" targetRef="bpmn-7a8d206f-a6bb-48ba-b6f3-d7f643a1239a" name="Fail" id="bpmn-86db191f-813c-4159-9c03-f8f5283d64cb"/>
+        <sequenceFlow sourceRef="bpmn-6ab8e286-df8e-43f7-918b-67f695093fdc" targetRef="bpmn-f75acf07-a9a8-42fd-9ece-5edfa97285cb" name="OK" id="bpmn-8725a4a7-f684-4be0-9443-b498b4c3b977"/>
+        <sequenceFlow sourceRef="bpmn-7a8d206f-a6bb-48ba-b6f3-d7f643a1239a" targetRef="bpmn-631509b9-9347-4c04-9c13-c4a7a6c68f99" name="" id="bpmn-4d742e47-6490-4675-a7c7-b25888d01597"/>
+        <sequenceFlow sourceRef="bpmn-f75acf07-a9a8-42fd-9ece-5edfa97285cb" targetRef="bpmn-631509b9-9347-4c04-9c13-c4a7a6c68f99" name="" id="bpmn-c3c51bb1-98c6-46d0-a088-c60d65844308"/>
+        <startEvent name="Start" id="bpmn-1db0f960-8452-4335-8177-eed6e7be4165"/>
+        <task name="initialize" id="bpmn-e5d968e3-304a-4e3d-ad1a-cf16c804389c">
+            <documentation textFormat="text/html">bla bla bame sheep&lt;br /&gt;</documentation>
+        </task>
+        <task name="readCsv" id="bpmn-68cdc49f-a0d8-4318-858f-55f5e68911c7"/>
+        <exclusiveGateway gatewayDirection="Diverging" name="fileCheck" id="bpmn-c258abf0-b176-4d96-b289-1f4769ea64ab"/>
+        <task name="failedToRead" id="bpmn-9e2a7e71-51fc-4042-8daa-05644ebc79ac"/>
+        <endEvent name="End" id="bpmn-631509b9-9347-4c04-9c13-c4a7a6c68f99"/>
+        <task name="processCsv" id="bpmn-6d687544-1840-4729-8fe6-4e087ffdb80e"/>
+        <task name="insertLeadData" id="bpmn-34e57490-8b62-4ccd-b9f4-672079e1154e"/>
+        <task name="CallODMFollowup" id="bpmn-bdcbd037-95ae-46d2-8cc1-2873b53dc4e5"/>
+        <exclusiveGateway gatewayDirection="Diverging" name="OdmCheck" id="bpmn-6ab8e286-df8e-43f7-918b-67f695093fdc"/>
+        <task name="followupFailed" id="bpmn-7a8d206f-a6bb-48ba-b6f3-d7f643a1239a"/>
+        <task name="getFollowUp" id="bpmn-f75acf07-a9a8-42fd-9ece-5edfa97285cb"/>
+    </process>
+</definitions>

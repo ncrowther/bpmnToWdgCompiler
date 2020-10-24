@@ -1,4 +1,4 @@
-package converter.wdg.ibm.com;
+package converter.wdg;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.w3c.dom.Document;
+import converter.common.BpmnTask;
+import converter.common.StringUtils;
 
 public class CodeConverter {
 	
@@ -31,7 +32,7 @@ public class CodeConverter {
 		BpmnTask task = bpmnParser.getTask(taskId);
 		if (task != null) {
 			
-			System.out.println("**GENERATING CODE FOR " + task.name);
+			System.out.println("**GENERATING CODE FOR " + task.getName());
 			
 			switch (task.getType()) {
 			case TASK:
@@ -48,7 +49,7 @@ public class CodeConverter {
 	}
 
 	private static void generateTaskCode(WdgBpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
-		String name = StringUtils.convertToTitleCaseIteratingChars(task.name);
+		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 
 		String gosubStr = "goSub --label " + name;
 		addCode(parentName, gosubStr);

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:ns2="http://www.ibm.com/bpm/Extensions" xmlns:ns3="http://www.ibm.com/xmlns/prod/bpm/bpmn/ext/process" xmlns:ns4="http://www.omg.org/spec/DD/20100524/DI" xmlns:ns5="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:ns6="http://www.omg.org/spec/DD/20100524/DC" id="bpmn-4c3800b0-6109-4405-9d8e-19d170270f47" targetNamespace="http://www.ibm.com/WebSphere/bpm/BlueworksLive/41ece48a6f-ecf3ea35" exporter="http://www.ibm.com/WebSphere/bpm/BlueworksLive" exporterVersion="2.0" xmlns:bwl0="http://www.ibm.com/WebSphere/bpm/BlueworksLive/Glossaries" xmlns:res="http://www.ibm.com/WebSphere/bpm/BlueworksLive/Resources" xmlns:io="IBM_Cloud" xmlns:tns="http://www.ibm.com/WebSphere/bpm/BlueworksLive/41ece48a6f-ecf3ea35">
+    <import namespace="http://www.ibm.com/WebSphere/bpm/BlueworksLive/Glossaries" location="../Glossaries.bpmn" importType="http://www.omg.org/spec/BPMN/20100524/MODEL"/>
+    <import namespace="http://www.ibm.com/WebSphere/bpm/BlueworksLive/Resources" location="../Resources.bpmn" importType="http://www.omg.org/spec/BPMN/20100524/MODEL"/>
+    <import namespace="IBM_Cloud" location="../InputOutput.xsd" importType="http://www.w3.org/2001/XMLSchema"/>
+    <process processType="Private" isExecutable="false" name="SimpleMissingTicketsBWL" id="bpmn-b3115434-b98f-4705-ba4e-d29b54915160">
+        <extensionElements>
+            <ns2:bpmAttributes>
+                <ns2:milestones id="bpmn-6b7e8ed6-8102-4783-9039-a3087a309729">
+                    <ns2:milestone name="Milestone" id="bpmn-e151f9a1-8b1a-46b7-b73d-0c50b20a62ce">
+                        <flowNodeRef>bpmn-9d530bf6-d54c-4023-860f-3ed4c4ba0aa3</flowNodeRef>
+                        <flowNodeRef>bpmn-312e2804-2964-4c6a-8274-f549af438572</flowNodeRef>
+                        <flowNodeRef>bpmn-66b67377-8525-446d-86f8-42ffd2c2e596</flowNodeRef>
+                        <flowNodeRef>bpmn-c9da1241-0521-4514-a411-e14af78311d8</flowNodeRef>
+                        <flowNodeRef>bpmn-293d0be3-4078-49ab-b033-03f0f91582ee</flowNodeRef>
+                    </ns2:milestone>
+                </ns2:milestones>
+                <ns2:properties/>
+            </ns2:bpmAttributes>
+        </extensionElements>
+        <laneSet id="bpmn-70761d32-c761-492d-b1e1-585c70a389f2"/>
+        <sequenceFlow sourceRef="bpmn-9d530bf6-d54c-4023-860f-3ed4c4ba0aa3" targetRef="bpmn-312e2804-2964-4c6a-8274-f549af438572" name="" id="bpmn-eb7d815c-6630-4d3d-821c-75e89e019628"/>
+        <sequenceFlow sourceRef="bpmn-312e2804-2964-4c6a-8274-f549af438572" targetRef="bpmn-66b67377-8525-446d-86f8-42ffd2c2e596" name="" id="bpmn-72e01671-d514-4348-89bc-3fa42d4302de"/>
+        <sequenceFlow sourceRef="bpmn-66b67377-8525-446d-86f8-42ffd2c2e596" targetRef="bpmn-c9da1241-0521-4514-a411-e14af78311d8" name="No more tickets" id="bpmn-beeba9d1-39c9-4533-bec3-accb15878351"/>
+        <sequenceFlow sourceRef="bpmn-66b67377-8525-446d-86f8-42ffd2c2e596" targetRef="bpmn-293d0be3-4078-49ab-b033-03f0f91582ee" id="bpmn-47d27e1d-6d1e-454e-8a3e-5e23eed36a72"/>
+        <sequenceFlow sourceRef="bpmn-293d0be3-4078-49ab-b033-03f0f91582ee" targetRef="bpmn-312e2804-2964-4c6a-8274-f549af438572" name="" id="bpmn-99b72d80-d618-42d8-8c6c-172eae31b440"/>
+        <startEvent name="Start" id="bpmn-9d530bf6-d54c-4023-860f-3ed4c4ba0aa3"/>
+        <task name="Get next ticket" id="bpmn-312e2804-2964-4c6a-8274-f549af438572"/>
+        <exclusiveGateway gatewayDirection="Diverging" name="Exclusive Gateway" id="bpmn-66b67377-8525-446d-86f8-42ffd2c2e596"/>
+        <endEvent name="End" id="bpmn-c9da1241-0521-4514-a411-e14af78311d8"/>
+        <task name="Cancel Pending Payment" id="bpmn-293d0be3-4078-49ab-b033-03f0f91582ee"/>
+    </process>
+</definitions>

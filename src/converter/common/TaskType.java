@@ -1,4 +1,4 @@
-package converter.wdg.ibm.com;
+package converter.common;
 
 public enum TaskType {
 	START("start"), TASK("task"), GATEWAY("gateway"), END("end");

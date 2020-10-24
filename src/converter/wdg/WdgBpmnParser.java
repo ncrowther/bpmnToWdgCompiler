@@ -1,4 +1,4 @@
-package converter.wdg.ibm.com;
+package converter.wdg;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,13 +15,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class BpmnParser {
+import converter.common.BpmnTask;
+import converter.common.TaskType;
+
+public class WdgBpmnParser {
 
 	private Map<String, BpmnTask> taskMap = new HashMap<String, BpmnTask>();
 	private Map<String, String> sequenceMap = new HashMap<String, String>();
 	private String startId;
 
-	public BpmnParser(File inputFile) throws SAXException, IOException, ParserConfigurationException {
+	public WdgBpmnParser(File inputFile) throws SAXException, IOException, ParserConfigurationException {
 		
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -158,8 +161,10 @@ public class BpmnParser {
 				Element linkNode = (Element) link;
 				String linkId = linkNode.getTextContent();
 				if (link.getNodeName().equals("incoming")) {
-					// System.out.println("Incoming Id :" + linkId);
+					System.out.println("Incoming Id :" + linkId);
 					incomingId = linkId;
+					task.addIncomingId(incomingId);
+					taskMap.put(incomingId, task);
 				} else {
 					// System.out.println("Outgoing Id :" + linkId);
 					outgoingId = linkId;
@@ -167,34 +172,12 @@ public class BpmnParser {
 				}
 			}
 		}
+		
+		task.setId(id);
+		task.setType(type);
+		task.setName(name);
 
-		task.id = id;
-		task.type = type;
-		task.name = name;
-		task.incomingId = incomingId;
-
-		taskMap.put(incomingId, task);
 	}
-	
-	private void getTaskAttributes(TaskType type, String name, String id, NodeList childNodes) {
-
-		BpmnTask task = new BpmnTask();
-
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node link = childNodes.item(i);
-
-			if (link.getNodeType() == Node.ELEMENT_NODE) {
-				Element linkNode = (Element) link;
-				String documentation = linkNode.getTextContent();
-			}
-		}
-
-		task.id = id;
-		task.type = type;
-		task.name = name;
-
-		taskMap.put(incomingId, task);
-	}	
 	
 	private void getSequenceAttributes(String name, String id, NodeList childNodes) {
 

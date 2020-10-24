@@ -1,4 +1,4 @@
-package converter.wdg.ibm.com;
+package converter.bwl;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,25 +15,28 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class BpmnParser {
+import converter.common.BpmnTask;
+import converter.common.TaskType;
+
+public class BwlBpmnParser {
 
 	private Map<String, BpmnTask> taskMap = new HashMap<String, BpmnTask>();
 	private Map<String, String> sequenceMap = new HashMap<String, String>();
 	private String startId;
 
-	public BpmnParser(File inputFile) throws SAXException, IOException, ParserConfigurationException {
-		
+	public BwlBpmnParser(File inputFile) throws SAXException, IOException, ParserConfigurationException {
+
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(inputFile);
 		doc.getDocumentElement().normalize();
-		
+
 		getTasks(doc);
 		getGateways(doc);
 		getSequenceFlow(doc);
 		startId = getStartId(doc);
 	}
-	
+
 	public Map<String, BpmnTask> getTaskMap() {
 		return taskMap;
 	}
@@ -41,11 +44,11 @@ public class BpmnParser {
 	public Map<String, String> getSequenceMap() {
 		return sequenceMap;
 	}
-	
+
 	public String getStartId() {
 		return startId;
 	}
-	
+
 	public BpmnTask getTask(String taskId) {
 		return taskMap.get(taskId);
 	}
@@ -68,7 +71,7 @@ public class BpmnParser {
 				System.out.println("Id :" + id);
 
 				NodeList childNodes = eElement.getChildNodes();
-				getNodeAttributes(TaskType.TASK, name, id, childNodes);
+				setTaskNodeAttributes(name, id, childNodes);
 			}
 		}
 	}
@@ -87,15 +90,14 @@ public class BpmnParser {
 				String name = eElement.getAttribute("name");
 				String id = eElement.getAttribute("id");
 
-				// System.out.println("Name :" + name);
-				// System.out.println("Id :" + id);
+				System.out.println("Name :" + name);
+				System.out.println("Id :" + id);
 
-				NodeList childNodes = eElement.getChildNodes();
-				getNodeAttributes(TaskType.GATEWAY, name, id, childNodes);
+				setGatewayNodeAttributes(name, id);
 			}
 		}
 	}
-	
+
 	private Map<String, String> getSequenceFlow(Document doc) {
 		NodeList nList = doc.getElementsByTagName("sequenceFlow");
 		// System.out.println("----------------------------");
@@ -106,17 +108,31 @@ public class BpmnParser {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nNode;
 
-				String name = eElement.getAttribute("name");
 				String id = eElement.getAttribute("id");
+				String incomingId = eElement.getAttribute("sourceRef");
+				String outgoingId = eElement.getAttribute("targetRef");
 
-				// System.out.println("Name :" + name);
-				// System.out.println("Id :" + id);
+				System.out.println("Id :" + id);
+				System.out.println("incomingId :" + incomingId);
+				System.out.println("outgoingId :" + outgoingId);
 
-				NodeList childNodes = eElement.getChildNodes();
-				getSequenceAttributes(name, id, childNodes);
+				BpmnTask task = taskMap.get(outgoingId);
+				if (task != null) {
+					task.addIncomingId(incomingId);
+				}
+
+				task = taskMap.get(incomingId);
+				if (task != null) {
+					task.addOutgoingId(outgoingId);
+				} else {
+					task = new BpmnTask();
+					task.setType(TaskType.START);
+					task.addOutgoingId(outgoingId);
+					taskMap.put(incomingId, task);
+				}
 			}
 		}
-		
+
 		return sequenceMap;
 	}
 
@@ -126,7 +142,7 @@ public class BpmnParser {
 		NodeList startEvents = doc.getElementsByTagName("startEvent");
 		for (int i = 0; i < startEvents.getLength(); i++) {
 			Node nNode = startEvents.item(i);
-			// System.out.println("\nstartEvent :" + nNode.getNodeName());
+			System.out.println("\nstartEvent :" + nNode.getNodeName());
 
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nNode;
@@ -134,101 +150,48 @@ public class BpmnParser {
 				String name = eElement.getAttribute("name");
 				String id = eElement.getAttribute("id");
 
-				// System.out.println("Name :" + name);
-				// System.out.println("Id :" + id);
+				System.out.println("Name :" + name);
+				System.out.println("Id :" + id);
 
-				NodeList childNodes = eElement.getChildNodes();
-				startId = getOutgoingId(childNodes);
+				startId = id;
 			}
 		}
 
 		return startId;
 	}
 
-	private void getNodeAttributes(TaskType type, String name, String id, NodeList childNodes) {
+	private void setTaskNodeAttributes(String name, String id, NodeList childNodes) {
 
-		String incomingId = "";
-		String outgoingId = "";
+		String documentation = "";
 		BpmnTask task = new BpmnTask();
 
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node link = childNodes.item(i);
 
 			if (link.getNodeType() == Node.ELEMENT_NODE) {
-				Element linkNode = (Element) link;
-				String linkId = linkNode.getTextContent();
-				if (link.getNodeName().equals("incoming")) {
-					// System.out.println("Incoming Id :" + linkId);
-					incomingId = linkId;
-				} else {
-					// System.out.println("Outgoing Id :" + linkId);
-					outgoingId = linkId;
-					task.addOutgoingId(outgoingId);
+				if (link.getNodeName().equals("documentation")) {
+					documentation = link.getTextContent();
+					System.out.println("Documentation :" + documentation);
 				}
 			}
 		}
 
-		task.id = id;
-		task.type = type;
-		task.name = name;
-		task.incomingId = incomingId;
+		task.setId(id);
+		task.setType(TaskType.TASK);
+		task.setName(name);
+		task.setDocumentation(documentation);
 
-		taskMap.put(incomingId, task);
+		taskMap.put(id, task);
 	}
-	
-	private void getTaskAttributes(TaskType type, String name, String id, NodeList childNodes) {
+
+	private void setGatewayNodeAttributes(String name, String id) {
 
 		BpmnTask task = new BpmnTask();
 
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node link = childNodes.item(i);
+		task.setId(id);
+		task.setType(TaskType.GATEWAY);
+		task.setName(name);
 
-			if (link.getNodeType() == Node.ELEMENT_NODE) {
-				Element linkNode = (Element) link;
-				String documentation = linkNode.getTextContent();
-			}
-		}
-
-		task.id = id;
-		task.type = type;
-		task.name = name;
-
-		taskMap.put(incomingId, task);
-	}	
-	
-	private void getSequenceAttributes(String name, String id, NodeList childNodes) {
-
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node link = childNodes.item(i);
-
-			if (link.getNodeType() == Node.ELEMENT_NODE) {
-				Element linkNode = (Element) link;
-				String conditionExpression = linkNode.getTextContent();
-				// System.out.println("Condition :" + conditionExpression);
-				if (conditionExpression.contains("true")) {
-					sequenceMap.put(id, "");
-				}
-			}
-		}
-	}
-
-	private String getOutgoingId(NodeList childNodes) {
-
-		String outgoingId = "";
-
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node link = childNodes.item(i);
-
-			if (link.getNodeType() == Node.ELEMENT_NODE) {
-				Element linkNode = (Element) link;
-				String linkId = linkNode.getTextContent();
-				if (link.getNodeName().equals("outgoing")) {
-					// System.out.println("Outgoing Id :" + linkId);
-					outgoingId = linkId;
-				}
-			}
-		}
-
-		return outgoingId;
+		taskMap.put(id, task);
 	}
 }

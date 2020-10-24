@@ -1,4 +1,4 @@
-package converter.wdg.ibm.com;
+package converter.common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ public class BpmnTask {
 	String id;
 	TaskType type;
 	String name;
+	String documentation;
     List<String> incomingIds = new ArrayList<String>();
     List<String> outgoingIds = new ArrayList<String>();
     
@@ -31,6 +32,14 @@ public class BpmnTask {
 		this.name = name;
 	}
 	
+	public String getDocumentation() {
+		return documentation;
+	}
+
+	public void setDocumentation(String documentation) {
+		this.documentation = documentation;
+	}
+
 	public String getIncomingId(int index) {
 		return incomingIds.get(index);
 	}	

@@ -1,4 +1,4 @@
-package converter.wdg.ibm.com;
+package converter.wdg;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class BpmnToWdgCompiler {
+import converter.common.BpmnTask;
+import converter.common.StringUtils;
+
+public class WdgBpmnToWdgCompiler {
 
 	private static Map<String, List<String>> functionList = new HashMap<String, List<String>>();
 	private static Map<String, List<String>> codeMap;
@@ -55,10 +58,10 @@ public class BpmnToWdgCompiler {
 
 		if (task != null) {
 			
-			if (generatedCode.contains(task.id)) {
+			if (generatedCode.contains(task.getId())) {
 				return;
 			} else {
-				generatedCode.add(task.id);
+				generatedCode.add(task.getId());
 			}
 			
 			switch (task.getType()) {
@@ -75,7 +78,7 @@ public class BpmnToWdgCompiler {
 	}
 
 	private static void generateTaskCode(WdgBpmnParser bpmnParser, BpmnTask task) throws IOException {
-		String name = StringUtils.convertToTitleCaseIteratingChars(task.name);
+		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 
 		StringBuilder beginSubStr = new StringBuilder();
 
