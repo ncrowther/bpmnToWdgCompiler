@@ -16,6 +16,10 @@ public class FunctionConverter {
 	private static Map<String, List<String>> functionList = new HashMap<String, List<String>>();
 	private static Set<String> generatedCode = new HashSet<String>();
 		
+	public static void reset() {
+		generatedCode = new HashSet<String>();
+		functionList = new HashMap<String, List<String>>();
+	}
 	public static Map<String, List<String>> generateWDGFunctions(BwlBpmnParser bpmnParser, String taskId) throws IOException {
 
 		BpmnTask task = bpmnParser.getTask(taskId);
@@ -34,6 +38,9 @@ public class FunctionConverter {
 				break;
 			case TASK:
 				generateTaskCode(bpmnParser, task);
+				break;
+			case SUBPROCESS:
+				generateSubprocessCode(bpmnParser, task);
 				break;
 			case GATEWAY:
 				generateGatewayCode(bpmnParser,task);
@@ -65,6 +72,11 @@ public class FunctionConverter {
 
 		generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
 	}
+	
+	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task) throws IOException {
+
+		generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
+	}	
 
 	private static void addFunction(String parentName, String functionStr) {
 		List<String> functionCode = functionList.get(parentName);

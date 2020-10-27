@@ -16,6 +16,11 @@ public class CodeConverter {
 	private static Map<String, List<String>> generatedCode = new HashMap<String, List<String>>();
 	private static Set<String> generatedSet = new HashSet<String>();
 	
+	public static void reset() {
+		generatedCode = new HashMap<String, List<String>>();;
+		generatedSet = new HashSet<String>();
+	}
+	
 	public static Map<String, List<String>> generateWDGFunctionCode(String startId, BwlBpmnParser bpmnParser) {
 		try {		
 			generateCode(bpmnParser, startId, "root");					
@@ -36,6 +41,9 @@ public class CodeConverter {
 			case START:
 				generateTaskCode(bpmnParser, bpmnParser.getTask(task.getOutgoingId(0)), "root");
 				break;
+			case SUBPROCESS:				
+				generateSubprocessCode(bpmnParser, task, parentName);
+				task = bpmnParser.getTask(task.getOutgoingId(0));
 			case TASK:
 				generateTaskCode(bpmnParser, task, parentName);
 				break;
@@ -64,6 +72,26 @@ public class CodeConverter {
 		} else {
 			generatedSet.add(id);
 		}
+	    generateCode(bpmnParser, outgoingId, name);
+
+	}
+	
+	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
+		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
+
+		String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
+		addCode(parentName, execScript);
+
+		String outgoingId = task.getOutgoingId(0);
+
+		String id = task.getId();
+
+		if (generatedSet.contains(id)) {
+			return;
+		} else {
+			generatedSet.add(id);
+		}
+		
 	    generateCode(bpmnParser, outgoingId, name);
 
 	}
