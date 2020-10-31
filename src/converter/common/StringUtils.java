@@ -9,11 +9,23 @@ public class StringUtils {
 		char[] arr = str.toCharArray();
 		for (int i = 0; i < arr.length; i++) {
 			int temp = arr[i];
-			if (temp != 32 && temp != 9) { // 32 ASCII for space and 9 is for Tab
+			if (temp != 32 && temp != 9 && temp != Character.getNumericValue('\\') && temp != Character.getNumericValue('/')) { // 32 ASCII for space and 9 is for Tab
 				s += arr[i];
 			}
 		}
 		return s;
+	}
+	
+	private static String removeInvalidCharacters(String str) {
+		String s = "";
+		char[] arr = str.toCharArray();
+		for (int i = 0; i < arr.length; i++) {
+			char temp = arr[i];
+			if (temp != '/' && temp != '\\') { //Invalid chars
+				s += arr[i];
+			}
+		}
+		return deleteWhiteSpace(s);
 	}
 
 	public static String convertToTitleCaseIteratingChars(String text) {
@@ -36,7 +48,7 @@ public class StringUtils {
 			converted.append(ch);
 		}
 
-		return deleteWhiteSpace(converted.toString());
+		return removeInvalidCharacters(converted.toString());
 	}
 	
 	public static String getExtensionByStringHandling(String filename) {

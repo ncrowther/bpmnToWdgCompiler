@@ -28,10 +28,12 @@ public class WalWriter {
 		strBuilder.append('\n');
         */
 		
-		String code = getCode(generatedCode, "root");
-		strBuilder.append('\n');
-		strBuilder.append(code);
+		String defVars = getCode(generatedCode, CodePlacement.DEFVARS.toString());
+		strBuilder.append(defVars);
 
+		String code = getCode(generatedCode, CodePlacement.ROOT.toString());
+		strBuilder.append(code);
+		
 		
 		for (String key : functionList.keySet()) {
 			List<String> functions = functionList.get(key);
@@ -76,6 +78,7 @@ public class WalWriter {
 		if (functionCode != null) {
 			for (String codeLine : functionCode) {
 				strBuilder.append(codeLine);
+				strBuilder.append('\n');
 				strBuilder.append('\n');
 			}
 		}

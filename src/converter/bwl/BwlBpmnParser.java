@@ -3,7 +3,9 @@ package converter.bwl;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,6 +38,7 @@ public class BwlBpmnParser {
 		startNodes = getStartIds(doc, outputFilename);
 		getTasks(doc);
 		getGateways(doc);
+		getProcesses(doc);
 		getSubProcesses(doc);
 		getSequenceFlow(doc);
 	}
@@ -58,8 +61,13 @@ public class BwlBpmnParser {
 
 	private void getTasks(Document doc) {
 		NodeList nList = doc.getElementsByTagName("task");
-		// System.out.println("----------------------------");
+		getTasksGeneric(nList);
 
+		nList = doc.getElementsByTagName("businessRuleTask");
+		getTasksGeneric(nList);
+	}
+
+	private void getTasksGeneric(NodeList nList) {
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 			System.out.println("\nCurrent Element :" + nNode.getNodeName());
@@ -75,6 +83,29 @@ public class BwlBpmnParser {
 
 				NodeList childNodes = eElement.getChildNodes();
 				setTaskNodeAttributes(name, id, childNodes);
+			}
+		}
+	}
+
+	private void getProcesses(Document doc) {
+		NodeList nList = doc.getElementsByTagName("process");
+		// System.out.println("----------------------------");
+
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+			Node nNode = nList.item(temp);
+			System.out.println("\nSubProcess :" + nNode.getNodeName());
+
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nNode;
+
+				String name = eElement.getAttribute("name");
+				String id = eElement.getAttribute("id");
+
+				System.out.println("Name :" + name);
+				System.out.println("Id :" + id);
+
+				NodeList childNodes = eElement.getChildNodes();
+				setSubProcessAttributes(name, id, childNodes);
 			}
 		}
 	}
@@ -104,8 +135,19 @@ public class BwlBpmnParser {
 
 	private void getGateways(Document doc) {
 		NodeList nList = doc.getElementsByTagName("exclusiveGateway");
-		// System.out.println("----------------------------");
+		getGatewaysGeneric(nList);
 
+		nList = doc.getElementsByTagName("inclusiveGateway");
+		getGatewaysGeneric(nList);
+		
+		nList = doc.getElementsByTagName("parallelGateway");
+		getGatewaysGeneric(nList);
+		
+		nList = doc.getElementsByTagName("complexGateway");
+		getGatewaysGeneric(nList);		
+	}
+
+	private void getGatewaysGeneric(NodeList nList) {
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 			// System.out.println("\nGateway :" + nNode.getNodeName());
@@ -198,7 +240,7 @@ public class BwlBpmnParser {
 			if (link.getNodeType() == Node.ELEMENT_NODE) {
 				if (link.getNodeName().equals("documentation")) {
 					documentation = link.getTextContent();
-					System.out.println("Documentation :" + documentation);
+					//System.out.println("Documentation :" + documentation);
 				}
 			}
 		}
@@ -214,6 +256,9 @@ public class BwlBpmnParser {
 	private void setSubProcessAttributes(String name, String id, NodeList childNodes) {
 
 		String subprocessName = "";
+		String documentation = "";
+		String startId = "";
+		
 		BpmnTask task = new BpmnTask();
 
 		for (int i = 0; i < childNodes.getLength(); i++) {
@@ -226,12 +271,16 @@ public class BwlBpmnParser {
 					
 					Element eElement = (Element) link;
 	
-					String startId = eElement.getAttribute("id");
+					startId = eElement.getAttribute("id");
 
 					System.out.println("startId :" + startId);
 					
 					BpmnTask startNode = taskMap.get(startId);
 					startNode.setName("generated\\" + subprocessName + ".txt");
+				}
+				else if (link.getNodeName().equals("documentation")) {
+					documentation = link.getTextContent();
+					// System.out.println("Documentation :" + documentation);
 				}
 			}
 		}
@@ -239,6 +288,8 @@ public class BwlBpmnParser {
 		task.setId(id);
 		task.setType(TaskType.SUBPROCESS);
 		task.setName(name);
+		task.setDocumentation(documentation);
+		task.setStartId(startId);
 
 		taskMap.put(id, task);
 	}	
@@ -254,19 +305,19 @@ public class BwlBpmnParser {
 		taskMap.put(id, task);
 	}
 	
-	/*
-	private String getAssociatedTaskName(String id) {
+	public BpmnTask getAssociatedProcess(String id) {
 		Iterator<Entry<String, BpmnTask>> it = taskMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
 			BpmnTask task = (BpmnTask) pair.getValue();
 			System.out.println(pair.getKey() + " = " + task);
-
-			if (task.getIncomingId(0).equals(id)) {
-				return StringUtils.convertToTitleCaseIteratingChars(task.getName());
+		
+			if (task.getStartId() != null && task.getStartId().equals(id)) {
+				return task;
 			}
 		}
-		return "";
+		return null;
 	}
-	*/
+		
+
 }

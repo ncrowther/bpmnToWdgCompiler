@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import converter.common.BpmnTask;
+import converter.common.CodePlacement;
 import converter.common.StringUtils;
+import converter.common.TaskType;
 
 public class CodeConverter {
 	
@@ -23,14 +25,14 @@ public class CodeConverter {
 	
 	public static Map<String, List<String>> generateWDGFunctionCode(String startId, BwlBpmnParser bpmnParser) {
 		try {		
-			generateCode(bpmnParser, startId, "root");					
+			generateCode(bpmnParser, startId, null);					
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return generatedCode;
 	}
 
-	private static void generateCode(BwlBpmnParser bpmnParser, String taskId, String parentName) throws IOException {
+	private static void generateCode(BwlBpmnParser bpmnParser, String taskId, BpmnTask parentTask) throws IOException {
 		
 		BpmnTask task = bpmnParser.getTask(taskId);
 		if (task != null) {
@@ -39,16 +41,16 @@ public class CodeConverter {
 			
 			switch (task.getType()) {
 			case START:
-				generateTaskCode(bpmnParser, bpmnParser.getTask(task.getOutgoingId(0)), "root");
+				generateStartCode(bpmnParser, bpmnParser.getTask(task.getOutgoingId(0)), null);
 				break;
 			case SUBPROCESS:				
-				generateSubprocessCode(bpmnParser, task, parentName);
+				generateSubprocessCode(bpmnParser, task, parentTask);
 				task = bpmnParser.getTask(task.getOutgoingId(0));
 			case TASK:
-				generateTaskCode(bpmnParser, task, parentName);
+				generateTaskCode(bpmnParser, task, parentTask);
 				break;
 			case GATEWAY:
-				generateGatewayCode(bpmnParser, task, parentName);
+				generateGatewayCode(bpmnParser, task, parentTask);
 				break;
 			default:
 				// code block
@@ -57,11 +59,25 @@ public class CodeConverter {
 		}
 	}
 
-	private static void generateTaskCode(BwlBpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
+	private static void generateStartCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) throws IOException {
+		
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
-
-		String gosubStr = "goSub --label " + name;
-		addCode(parentName, gosubStr);
+		String parentName = getParentName(parentTask);
+		
+	    String doc = getProcessDocumentation(task, bpmnParser);		
+		
+		if (doc != null) {	
+			addCode(CodePlacement.ROOT.toString(), doc);
+		}
+		
+		doc = getDocumentation(task);
+		
+		if (doc != null) {
+			addCode(name, doc);
+		} else {
+			String gosubStr = "goSub --label " + name;
+			addCode(parentName, gosubStr);
+		}
 
 		String outgoingId = task.getOutgoingId(0);
 
@@ -72,15 +88,27 @@ public class CodeConverter {
 		} else {
 			generatedSet.add(id);
 		}
-	    generateCode(bpmnParser, outgoingId, name);
+	    generateCode(bpmnParser, outgoingId, task);
 
 	}
 	
-	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
+	private static void generateTaskCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) throws IOException {
+		
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
-
-		String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
-		addCode(parentName, execScript);
+		String parentName = getParentName(parentTask);
+		
+		String doc = getDocumentation(task);
+		
+		if (doc != null ) {
+			addCode(name, doc);		
+		} else {
+			
+			String logMessage = "logMessage --message " + parentName + " --type \"Info\"";
+			addCode(parentName, logMessage);
+			
+			String gosubStr = "goSub --label " + name;
+			addCode(parentName, gosubStr);
+		}
 
 		String outgoingId = task.getOutgoingId(0);
 
@@ -92,22 +120,54 @@ public class CodeConverter {
 			generatedSet.add(id);
 		}
 		
-	    generateCode(bpmnParser, outgoingId, name);
+	    generateCode(bpmnParser, outgoingId, task);
+
+	}
+	
+	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) throws IOException {
+		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
+		String parentName = getParentName(parentTask);
+
+		String doc = getDocumentation(task);
+		// doc = null;
+		if (doc != null) {
+			addCode(name, doc);
+		} else {
+			
+			String logMessage = "logMessage --message " + parentName + " --type \"Info\"";
+			addCode(parentName, logMessage);
+			
+			String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
+			addCode(parentName, execScript);
+		}
+
+		String outgoingId = task.getOutgoingId(0);
+
+		String id = task.getId();
+
+		if (generatedSet.contains(id)) {
+			return;
+		} else {
+			generatedSet.add(id);
+		}
+		
+	    generateCode(bpmnParser, outgoingId, task);
 
 	}
 
-	private static void addCode(String parentName, String gosubStr) {
+	private static void addCode(String parentName, String codeStr) {
 		List<String> functionCode = generatedCode.get(parentName);
 		
 		if (functionCode == null) {
 			functionCode = new ArrayList<String>();
 			generatedCode.put(parentName, functionCode);
 		}
-		functionCode.add(gosubStr);	
+		functionCode.add(codeStr);	
 	}
 	
-	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task, String parentName) throws IOException {
+	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) throws IOException {
 		
+		String parentName = getParentName(parentTask);
 		
 		BpmnTask taskA = bpmnParser.getTask(task.getOutgoingId(0));
 		BpmnTask taskB = bpmnParser.getTask(task.getOutgoingId(1));
@@ -117,15 +177,15 @@ public class CodeConverter {
 		boolean successPathB = (taskB != null) ? sequenceMap.containsKey(taskB.getIncomingId(0)) : false;
 		
 		if (successPathA) {
-			generateGosubCode(bpmnParser, taskA, parentName, true);		
-			generateGosubCode(bpmnParser, taskB, parentName, false);	
+			generateGatewayCode(bpmnParser, taskA, parentTask, true);		
+			generateGatewayCode(bpmnParser, taskB, parentTask, false);	
 		} else if (successPathB) {
-			generateGosubCode(bpmnParser, taskB, parentName, true);		
-			generateGosubCode(bpmnParser, taskA, parentName, false);
+			generateGatewayCode(bpmnParser, taskB, parentTask, true);		
+			generateGatewayCode(bpmnParser, taskA, parentTask, false);
 		} else {
 			// No success path defined, so just make one up
-			generateGosubCode(bpmnParser, taskA, parentName, true);		
-			generateGosubCode(bpmnParser, taskB, parentName, false);	
+			generateGatewayCode(bpmnParser, taskA, parentTask, true);		
+			generateGatewayCode(bpmnParser, taskB, parentTask, false);	
 		}
 		
 		String endifStr = "endif";
@@ -133,28 +193,94 @@ public class CodeConverter {
 
 	}
 
-	private static void generateGosubCode(BwlBpmnParser bpmnParser, BpmnTask task, String parentName, boolean successPath ) throws IOException {
+	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean successPath ) throws IOException {
 		
 		if (task != null) {
+	
+			String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
+			String parentName = getParentName(parentTask);
 			
-			if (successPath) {
-				String ifStr = "if --left \"${result}\" --operator \"Is_True\"";
-				addCode(parentName, ifStr);
-				String commentStr = "// Success path ";
-				addCode(parentName, commentStr);
-			} else {
-				String elseStr = "else";
-				addCode(parentName, elseStr);
-				String commentStr = "// Failure path ";
-				addCode(parentName, commentStr);
+			String doc = getDocumentation(task);
+
+			if (doc != null) {
+				addCode(name, doc);
+			} else {	
+				
+				if (generatedCode.get(CodePlacement.DEFVARS.toString()) == null ) {
+			        String defVar = "defVar --name result --type Boolean --value True";
+					addCode(CodePlacement.DEFVARS.toString(), defVar);
+				}
+				
+				String logMessage = "logMessage --message " + parentName + " --type \"Info\"";
+				addCode(parentName, logMessage);
+				
+				if (successPath) {
+					
+					String ifStr = "if --left \"${result}\" --operator \"Is_True\"";
+					addCode(parentName, ifStr);
+					
+					String commentStr = "// Success path ";					
+					addCode(parentName, commentStr);
+					
+				} else {
+					String elseStr = "else";
+					addCode(parentName, elseStr);
+					String commentStr = "// Failure path ";
+					addCode(parentName, commentStr);
+				}
+
+				if (task.getType() == TaskType.TASK) {
+					String gosubStr = "goSub --label " + name;
+					addCode(parentName, gosubStr);
+				}
+
+				if (task.getType() == TaskType.SUBPROCESS) {
+					String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
+					addCode(parentName, execScript);
+				}
 			}
 			
-			String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
-				
-			String gosubStr = "goSub --label " + name;
-			addCode(parentName, gosubStr);
-			
-			generateCode(bpmnParser, task.getOutgoingId(0), name);
+			generateCode(bpmnParser, task.getOutgoingId(0), task);
 		}
 	}	
+	
+	private static String getDocumentation(BpmnTask task) {
+		if (task == null) {
+			return null;
+		} else {
+			String doc =  task.getDocumentation();
+			if (doc == null || doc.length() == 0) {
+				return null;
+			}
+			else {
+				return doc;
+			}
+		}
+	}
+
+	private static String getProcessDocumentation(BpmnTask task, BwlBpmnParser bpmnParser) {
+		if (task == null) {
+			return null;
+		} else {
+			String startId = task.getIncomingId(0); //getStartId();
+			
+			if (startId != null) {
+				BpmnTask process = bpmnParser.getAssociatedProcess(startId);
+				
+				if (process != null) {
+				    return getDocumentation(process);
+				} 
+			} 
+		}
+		
+		return null;
+	}
+	
+	private static String getParentName(BpmnTask parentTask) {
+		if (parentTask == null) {
+			return CodePlacement.ROOT.toString();
+		} else {
+			return StringUtils.convertToTitleCaseIteratingChars(parentTask.getName());
+		}
+	}
 }

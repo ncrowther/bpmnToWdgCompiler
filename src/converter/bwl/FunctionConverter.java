@@ -63,11 +63,10 @@ public class FunctionConverter {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 
 		StringBuilder beginSubStr = new StringBuilder();
-
+		
 		beginSubStr.append("beginSub --name " + name);
 		beginSubStr.append("\n");
-		beginSubStr.append("logMessage --message " + name + " --type \"Info\"");
-		beginSubStr.append("\n");
+		
 		addFunction(name, beginSubStr.toString());
 
 		generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
@@ -90,13 +89,16 @@ public class FunctionConverter {
 
 	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task) throws IOException {
 
-		BpmnTask taskA = bpmnParser.getTask(task.getOutgoingId(0));
+		getChildTask(bpmnParser, task.getOutgoingId(0));
 
-		BpmnTask taskB = bpmnParser.getTask(task.getOutgoingId(1));
-
-		generateSubCode(bpmnParser, taskA);
-
-		generateSubCode(bpmnParser, taskB);
+		getChildTask(bpmnParser, task.getOutgoingId(1));
+	}
+	
+	private static void getChildTask(BwlBpmnParser bpmnParser, String childId) throws IOException {
+		BpmnTask childTask = bpmnParser.getTask(childId);
+		if (childTask != null) {
+			generateSubCode(bpmnParser, childTask);
+		}
 	}
 
 	private static void generateSubCode(BwlBpmnParser bpmnParser, BpmnTask task) throws IOException {
@@ -105,8 +107,6 @@ public class FunctionConverter {
 			StringBuilder beginSubStr = new StringBuilder();
 			String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 			beginSubStr.append("beginSub --name " + name);
-			beginSubStr.append("\n");
-			beginSubStr.append("logMessage --message " + name + " --type \"Info\"");
 			beginSubStr.append("\n");
 			
 			generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
