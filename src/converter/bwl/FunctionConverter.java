@@ -1,6 +1,5 @@
 package converter.bwl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +19,7 @@ public class FunctionConverter {
 		generatedCode = new HashSet<String>();
 		functionList = new HashMap<String, List<String>>();
 	}
-	public static Map<String, List<String>> generateWDGFunctions(BwlBpmnParser bpmnParser, String taskId) throws IOException {
+	public static Map<String, List<String>> generateWDGFunctions(BwlBpmnParser bpmnParser, String taskId)  {
 
 		BpmnTask task = bpmnParser.getTask(taskId);
 
@@ -53,13 +52,13 @@ public class FunctionConverter {
 		return functionList;
 	}
 
-	private static void generateMainCode(BwlBpmnParser bpmnParser, BpmnTask task) throws IOException {
+	private static void generateMainCode(BwlBpmnParser bpmnParser, BpmnTask task)  {
 		
 		task = bpmnParser.getTask(task.getOutgoingId(0));
 		generateWDGFunctions(bpmnParser, task.getId());
 	}
 	
-	private static void generateTaskCode(BwlBpmnParser bpmnParser, BpmnTask task) throws IOException {
+	private static void generateTaskCode(BwlBpmnParser bpmnParser, BpmnTask task)  {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 
 		StringBuilder beginSubStr = new StringBuilder();
@@ -69,12 +68,20 @@ public class FunctionConverter {
 		
 		addFunction(name, beginSubStr.toString());
 
-		generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
+		List<String> outgoingIds  = task.getOutgoingIds();	
+		outgoingIds.forEach((outgoingId)  -> {
+			generateWDGFunctions(bpmnParser, outgoingId);
+        });
+		
 	}
 	
-	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task) throws IOException {
+	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task)  {
 
-		generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
+		List<String> outgoingIds  = task.getOutgoingIds();	
+		outgoingIds.forEach((outgoingId)  -> {
+			generateWDGFunctions(bpmnParser, outgoingId);
+        });
+		
 	}	
 
 	private static void addFunction(String parentName, String functionStr) {
@@ -87,21 +94,22 @@ public class FunctionConverter {
 		functionCode.add(functionStr);
 	}
 
-	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task) throws IOException {
+	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task)  {
 
-		getChildTask(bpmnParser, task.getOutgoingId(0));
-
-		getChildTask(bpmnParser, task.getOutgoingId(1));
+		List<String> outgoingIds  = task.getOutgoingIds();	
+		outgoingIds.forEach((outgoingId)  -> {
+			getChildTask(bpmnParser, outgoingId);
+        });
 	}
 	
-	private static void getChildTask(BwlBpmnParser bpmnParser, String childId) throws IOException {
+	private static void getChildTask(BwlBpmnParser bpmnParser, String childId)  {
 		BpmnTask childTask = bpmnParser.getTask(childId);
 		if (childTask != null) {
 			generateSubCode(bpmnParser, childTask);
 		}
 	}
 
-	private static void generateSubCode(BwlBpmnParser bpmnParser, BpmnTask task) throws IOException {
+	private static void generateSubCode(BwlBpmnParser bpmnParser, BpmnTask task)  {
 
 		if (task != null) {
 			StringBuilder beginSubStr = new StringBuilder();
@@ -109,8 +117,11 @@ public class FunctionConverter {
 			beginSubStr.append("beginSub --name " + name);
 			beginSubStr.append("\n");
 			
-			generateWDGFunctions(bpmnParser, task.getOutgoingId(0));
-	
+			List<String> outgoingIds  = task.getOutgoingIds();	
+			outgoingIds.forEach((outgoingId)  -> {
+				generateWDGFunctions(bpmnParser, outgoingId);
+	        });
+			
 			addFunction(name, beginSubStr.toString());
 		}
 	}

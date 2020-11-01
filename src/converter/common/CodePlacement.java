@@ -2,5 +2,5 @@ package converter.common;
 
 public enum CodePlacement {
 
-	ROOT, DEFVARS
+	MAIN, DEFVARS
 }

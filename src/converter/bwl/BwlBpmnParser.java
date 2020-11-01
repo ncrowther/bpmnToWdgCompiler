@@ -65,6 +65,15 @@ public class BwlBpmnParser {
 
 		nList = doc.getElementsByTagName("businessRuleTask");
 		getTasksGeneric(nList);
+		
+		nList = doc.getElementsByTagName("serviceTask");
+		getTasksGeneric(nList);	
+		
+		nList = doc.getElementsByTagName("userTask");
+		getTasksGeneric(nList);		
+		
+		nList = doc.getElementsByTagName("callActivity");
+		getTasksGeneric(nList);		
 	}
 
 	private void getTasksGeneric(NodeList nList) {
@@ -168,7 +177,6 @@ public class BwlBpmnParser {
 
 	private Map<String, String> getSequenceFlow(Document doc) {
 		NodeList nList = doc.getElementsByTagName("sequenceFlow");
-		// System.out.println("----------------------------");
 
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);

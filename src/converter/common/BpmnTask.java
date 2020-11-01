@@ -76,6 +76,10 @@ public class BpmnTask {
 		this.incomingIds.add(incomingId);
 	}
 
+	public List<String> getOutgoingIds() {
+		return outgoingIds;
+	}
+
 	public String getOutgoingId(int index) {
 		if (index > outgoingIds.size()-1) {
 			return null;

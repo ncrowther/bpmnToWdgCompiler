@@ -31,7 +31,7 @@ public class WalWriter {
 		String defVars = getCode(generatedCode, CodePlacement.DEFVARS.toString());
 		strBuilder.append(defVars);
 
-		String code = getCode(generatedCode, CodePlacement.ROOT.toString());
+		String code = getCode(generatedCode, CodePlacement.MAIN.toString());
 		strBuilder.append(code);
 		
 		
