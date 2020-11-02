@@ -8,7 +8,7 @@ See https://www.ibm.com/products/blueworkslive
 ## Usage
 
 Download this repo as a zip and extract to a folder of your choice.
-Create a new process in BlueWorksLive.  
+Create a new process in BlueWorks Live.  
 Export the process as BPMN 2.0
 Save the zip to a folder of your choice.
 Extract the zip.
@@ -19,10 +19,12 @@ Copy this bpmn to:
 [directory in which this README resides]\data\[FILENAME].bpmn
 ```
 Prerequisite. Ensure you have java installed.
+
 In a command prompt, enter the directory in which this README resides and execute:
 
 ```
-java -cp .\bin  converter.bwl.BwlBpmnToWdgCompiler .\data\[FILENAME].bpmn
+mkdir generated
+java -jar bpmnToWal.jar .\data\[FILENAME].bpmn
 ```
 
 Upon successful execution the WAL code is generated here:
