@@ -7,6 +7,7 @@ See https://www.ibm.com/products/blueworkslive
 
 ## Usage
 
+Download this repo as a zip and extract to a folder of your choice
 Create a new process in BlueWorksLive.  
 Export the process as BPMN 2.0
 Save the zip to a folder of your choice
