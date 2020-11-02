@@ -7,13 +7,13 @@ See https://www.ibm.com/products/blueworkslive
 
 ## Usage
 
-Download this repo as a zip and extract to a folder of your choice
+Download this repo as a zip and extract to a folder of your choice.
 Create a new process in BlueWorksLive.  
 Export the process as BPMN 2.0
-Save the zip to a folder of your choice
-Extract the zip
-enter the unzipped folder and drill down to locate the bpmn file with the name of your process
-copy this bpmn to:
+Save the zip to a folder of your choice.
+Extract the zip.
+Enter the unzipped folder and drill down to locate the bpmn file with the name of your process.
+Copy this bpmn to:
 
 ```
 [directory in which this README resides]\data\[FILENAME].bpmn
@@ -31,7 +31,7 @@ Upon successful execution the WAL code is generated here:
 .\generated\[FILENAME].txt
 ```
 
-Back in WDG Studio, create a new WAL File
+Back in WDG Studio, create a new WAL File.
 Enter the script tab and paste the contents of the generated file specified above.
 Your code should be ready to run.  
 
