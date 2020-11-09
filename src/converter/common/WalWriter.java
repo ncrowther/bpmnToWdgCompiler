@@ -77,9 +77,11 @@ public class WalWriter {
 
 		if (functionCode != null) {
 			for (String codeLine : functionCode) {
-				strBuilder.append(codeLine);
-				strBuilder.append('\n');
-				strBuilder.append('\n');
+				if (codeLine != null) {
+					strBuilder.append(codeLine);
+					strBuilder.append('\n');
+					strBuilder.append('\n');
+				}
 			}
 		}
 

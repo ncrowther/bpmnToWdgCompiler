@@ -45,7 +45,7 @@ public class CodeConverter {
 				break;
 			case SUBPROCESS:
 				generateSubprocessCode(bpmnParser, task, parentTask);
-				task = bpmnParser.getTask(task.getOutgoingId(0));
+				break;
 			case TASK:
 				generateTaskCode(bpmnParser, task, parentTask);
 				break;
@@ -68,6 +68,7 @@ public class CodeConverter {
 
 		if (doc != null) {
 			addCode(CodePlacement.MAIN.toString(), doc);
+			addCode(CodePlacement.DEFVARS.toString(), null);
 		}
 
 		doc = getDocumentation(task);
@@ -118,19 +119,15 @@ public class CodeConverter {
 			addCode(name, doc);
 		} else {
 
-			// String logMessage = "logMessage --message " + parentName + " --type
-			// \"Info\"";
-			// addCode(parentName, logMessage);
-
 			String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
 			addCode(parentName, execScript);
 		}
-
-		generateCodeRecursive(bpmnParser, task);
+	
+		generateCodeRecursive(bpmnParser, task, parentTask);
 
 	}
 
-	private static void generateCodeRecursive(BwlBpmnParser bpmnParser, BpmnTask task) {
+	private static void generateCodeRecursive(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) {
 		String id = task.getId();
 
 		if (generatedSet.contains(id)) {
@@ -142,8 +139,12 @@ public class CodeConverter {
 		List<String> outgoingIds = task.getOutgoingIds();
 
 		outgoingIds.forEach((outgoingId) -> {
-			generateCode(bpmnParser, outgoingId, task);
+			generateCode(bpmnParser, outgoingId, parentTask);
 		});
+	}
+
+	private static void generateCodeRecursive(BwlBpmnParser bpmnParser, BpmnTask task) {
+		generateCodeRecursive(bpmnParser, task, task);
 	}
 
 	private static void addCode(String parentName, String codeStr) {
@@ -175,8 +176,11 @@ public class CodeConverter {
 
 		}
 
-		String endifStr = "endif";
-		addCode(parentName, endifStr);
+		String doc = getDocumentation(parentTask);
+		if (doc == null) {
+			String endifStr = "endif";
+			addCode(parentName, endifStr);
+		}
 
 	}
 
@@ -234,22 +238,13 @@ public class CodeConverter {
 		if (task.getType() == TaskType.SUBPROCESS) {
 			String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
 			addCode(parentName, execScript);
+			
+			List<String> outgoingIds = parentTask.getOutgoingIds();
 
-			String outgoingId = task.getOutgoingId(0);
+			outgoingIds.forEach((outgoingId) -> {
+				generateCode(bpmnParser, outgoingId, task);
+			});
 
-			if (outgoingId != null) {
-				BpmnTask childTask = bpmnParser.getTask(outgoingId);
-
-				if (childTask != null) {
-					name = StringUtils.convertToTitleCaseIteratingChars(childTask.getName());
-				}
-
-				String parentDoc = getDocumentation(parentTask);
-				if (parentDoc == null) {
-					String gosubStr = "goSub --label " + name;
-					addCode(parentName, gosubStr);
-				}
-			}
 		}
 	}
 

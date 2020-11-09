@@ -98,31 +98,7 @@ public class FunctionConverter {
 
 		List<String> outgoingIds  = task.getOutgoingIds();	
 		outgoingIds.forEach((outgoingId)  -> {
-			getChildTask(bpmnParser, outgoingId);
+			generateWDGFunctions(bpmnParser, outgoingId);
         });
-	}
-	
-	private static void getChildTask(BwlBpmnParser bpmnParser, String childId)  {
-		BpmnTask childTask = bpmnParser.getTask(childId);
-		if (childTask != null) {
-			generateSubCode(bpmnParser, childTask);
-		}
-	}
-
-	private static void generateSubCode(BwlBpmnParser bpmnParser, BpmnTask task)  {
-
-		if (task != null) {
-			StringBuilder beginSubStr = new StringBuilder();
-			String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
-			beginSubStr.append("beginSub --name " + name);
-			beginSubStr.append("\n");
-			
-			List<String> outgoingIds  = task.getOutgoingIds();	
-			outgoingIds.forEach((outgoingId)  -> {
-				generateWDGFunctions(bpmnParser, outgoingId);
-	        });
-			
-			addFunction(name, beginSubStr.toString());
-		}
 	}
 }
