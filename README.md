@@ -24,8 +24,11 @@ In a command prompt, enter the directory in which this README resides and execut
 
 ```
 mkdir generated
-java -jar bpmnToWal.jar .\data\[FILENAME].bpmn
+java -jar bpmnToWal.jar .\data\[FILENAME].bpmn [Y|N]
 ```
+
+Y = Generate from documentation
+N = Generate skeleton (default)
 
 Upon successful execution the WAL code is generated here:
 
