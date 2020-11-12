@@ -23,16 +23,17 @@ public class CodeConverter {
 		generatedSet = new HashSet<String>();
 	}
 
-	public static Map<String, List<String>> generateWDGFunctionCode(String startId, BwlBpmnParser bpmnParser) {
+	public static Map<String, List<String>> generateWDGFunctionCode(String startId, BwlBpmnParser bpmnParser, boolean generateFromDoc) {
+		
 		try {
-			generateCode(bpmnParser, startId, null);
+			generateCode(bpmnParser, startId, null, generateFromDoc);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return generatedCode;
 	}
 
-	private static void generateCode(BwlBpmnParser bpmnParser, String taskId, BpmnTask parentTask) {
+	private static void generateCode(BwlBpmnParser bpmnParser, String taskId, BpmnTask parentTask, boolean generateFromDoc) {
 
 		BpmnTask task = bpmnParser.getTask(taskId);
 		if (task != null) {
@@ -41,16 +42,16 @@ public class CodeConverter {
 
 			switch (task.getType()) {
 			case START:
-				generateStartCode(bpmnParser, bpmnParser.getTask(task.getOutgoingId(0)), null);
+				generateStartCode(bpmnParser, bpmnParser.getTask(task.getOutgoingId(0)), null, generateFromDoc);
 				break;
 			case SUBPROCESS:
-				generateSubprocessCode(bpmnParser, task, parentTask);
+				generateSubprocessCode(bpmnParser, task, parentTask, generateFromDoc);
 				break;
 			case TASK:
-				generateTaskCode(bpmnParser, task, parentTask);
+				generateTaskCode(bpmnParser, task, parentTask, generateFromDoc);
 				break;
 			case GATEWAY:
-				generateGatewayCode(bpmnParser, task, parentTask);
+				generateGatewayCode(bpmnParser, task, parentTask, generateFromDoc);
 				break;
 			default:
 				// code block
@@ -59,7 +60,7 @@ public class CodeConverter {
 		}
 	}
 
-	private static void generateStartCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) {
+	private static void generateStartCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean generateFromDoc) {
 
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 		String parentName = getParentName(parentTask);
@@ -71,63 +72,52 @@ public class CodeConverter {
 			addCode(CodePlacement.DEFVARS.toString(), null);
 		}
 
-		doc = getDocumentation(task);
-
-		if (doc != null) {
+		if (generateFromDoc) {
+			doc = getDocumentation(task);
 			addCode(name, doc);
 		} else {
 			String gosubStr = "goSub --label " + name;
 			addCode(parentName, gosubStr);
 		}
 
-		generateCodeRecursive(bpmnParser, task);
+		generateCodeRecursive(bpmnParser, task, generateFromDoc);
 
 	}
 
-	private static void generateTaskCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) {
+	private static void generateTaskCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean generateFromDoc) {
 
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 		String parentName = getParentName(parentTask);
 
-		String doc = getDocumentation(task);
-
-		if (doc != null) {
+		if (generateFromDoc) {
+			String doc = getDocumentation(task);
 			addCode(name, doc);
-		} 
-
-		// String logMessage = "logMessage --message " + name + " --type \"Info\"";
-		// addCode(name, logMessage);
-
-		String parentDoc = getDocumentation(parentTask);
-		if (parentDoc == null) {
+		} else {
 			String gosubStr = "goSub --label " + name;
 			addCode(parentName, gosubStr);
 		}
-		
 
-		generateCodeRecursive(bpmnParser, task);
+		generateCodeRecursive(bpmnParser, task, generateFromDoc);
 
 	}
 
-	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) {
+	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean generateFromDoc) {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 		String parentName = getParentName(parentTask);
 
-		String doc = getDocumentation(task);
-
-		if (doc != null) {
+		if (generateFromDoc) {
+			String doc = getDocumentation(task);
 			addCode(name, doc);
 		} else {
-
 			String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
 			addCode(parentName, execScript);
 		}
 	
-		generateCodeRecursive(bpmnParser, task, parentTask);
+		generateCodeRecursive(bpmnParser, task, parentTask, generateFromDoc);
 
 	}
 
-	private static void generateCodeRecursive(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) {
+	private static void generateCodeRecursive(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean generateFromDoc) {
 		String id = task.getId();
 
 		if (generatedSet.contains(id)) {
@@ -139,12 +129,12 @@ public class CodeConverter {
 		List<String> outgoingIds = task.getOutgoingIds();
 
 		outgoingIds.forEach((outgoingId) -> {
-			generateCode(bpmnParser, outgoingId, parentTask);
+			generateCode(bpmnParser, outgoingId, parentTask, generateFromDoc);
 		});
 	}
 
-	private static void generateCodeRecursive(BwlBpmnParser bpmnParser, BpmnTask task) {
-		generateCodeRecursive(bpmnParser, task, task);
+	private static void generateCodeRecursive(BwlBpmnParser bpmnParser, BpmnTask task, boolean generateFromDoc) {
+		generateCodeRecursive(bpmnParser, task, task, generateFromDoc);
 	}
 
 	private static void addCode(String parentName, String codeStr) {
@@ -157,7 +147,7 @@ public class CodeConverter {
 		functionCode.add(codeStr);
 	}
 
-	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask) {
+	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean generateFromDoc) {
 
 		String parentName = getParentName(parentTask);
 
@@ -168,16 +158,15 @@ public class CodeConverter {
 
 			BpmnTask childTask = bpmnParser.getTask(outgoingId);
 			if (first) {
-				generateGatewayCode(bpmnParser, childTask, parentTask, true);
+				generateGatewayCode(bpmnParser, childTask, parentTask, true, generateFromDoc);
 				first = false;
 			} else {
-				generateGatewayCode(bpmnParser, childTask, parentTask, false);
+				generateGatewayCode(bpmnParser, childTask, parentTask, false, generateFromDoc);
 			}
 
 		}
 
-		String doc = getDocumentation(parentTask);
-		if (doc == null) {
+		if (!generateFromDoc) {
 			String endifStr = "endif";
 			addCode(parentName, endifStr);
 		}
@@ -185,16 +174,15 @@ public class CodeConverter {
 	}
 
 	private static void generateGatewayCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask,
-			boolean successPath) {
+			boolean successPath, boolean generateFromDoc) {
 
 		if (task != null) {
 
 			String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 			String parentName = getParentName(parentTask);
 
-			String doc = getDocumentation(task);
-
-			if (doc != null) {
+			if (generateFromDoc) {		
+			    String doc = getDocumentation(task);
 				addCode(name, doc);
 			} else {
 
@@ -214,27 +202,22 @@ public class CodeConverter {
 				}
 
 				if (task.getType() == TaskType.TASK) {
-					
-					String parentDoc = getDocumentation(parentTask);
-					if (parentDoc == null) {
-						String gosubStr = "goSub --label " + name;
-						addCode(parentName, gosubStr);
-					}
-	
+					String gosubStr = "goSub --label " + name;
+					addCode(parentName, gosubStr);
 				}
-
-				addGotoChild(bpmnParser, task, name, parentName, parentTask);
 			}
+
+			addGotoChild(bpmnParser, task, name, parentName, parentTask, generateFromDoc);
 
 			List<String> outgoingIds = task.getOutgoingIds();
 
 			outgoingIds.forEach((outgoingId) -> {
-				generateCode(bpmnParser, outgoingId, task);
+				generateCode(bpmnParser, outgoingId, task, generateFromDoc);
 			});
 		}
 	}
 
-	private static void addGotoChild(BwlBpmnParser bpmnParser, BpmnTask task, String name, String parentName, BpmnTask parentTask) {
+	private static void addGotoChild(BwlBpmnParser bpmnParser, BpmnTask task, String name, String parentName, BpmnTask parentTask, boolean generateFromDoc) {
 		if (task.getType() == TaskType.SUBPROCESS) {
 			String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
 			addCode(parentName, execScript);
@@ -242,7 +225,7 @@ public class CodeConverter {
 			List<String> outgoingIds = parentTask.getOutgoingIds();
 
 			outgoingIds.forEach((outgoingId) -> {
-				generateCode(bpmnParser, outgoingId, task);
+				generateCode(bpmnParser, outgoingId, task, generateFromDoc);
 			});
 
 		}
@@ -250,11 +233,11 @@ public class CodeConverter {
 
 	private static String getDocumentation(BpmnTask task) {
 		if (task == null) {
-			return null;
+			return "";
 		} else {
 			String doc = task.getDocumentation();
 			if (doc == null || doc.length() == 0) {
-				return null;
+				return "";
 			} else {
 				return doc;
 			}

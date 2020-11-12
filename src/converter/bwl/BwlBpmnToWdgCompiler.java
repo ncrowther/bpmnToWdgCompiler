@@ -12,7 +12,8 @@ import converter.common.WalWriter;
 public class BwlBpmnToWdgCompiler {
 	
 	public static void main(String[] args) {
-
+		
+		boolean  generateFromDoc = false;
 		String inputFileName= "";
 		String outputFileName = null;
 		
@@ -29,6 +30,20 @@ public class BwlBpmnToWdgCompiler {
 					System.err.println("Please supply a bpmn file");
 					System.exit(1);					
 				}
+				
+				if (args.length > 1) {
+				   String generateFromDocStr = args[1];
+				   
+					
+					if (generateFromDocStr.equals("Y") ) {
+						generateFromDoc = true;
+					} else {
+						generateFromDoc = false;						
+					}
+			     }
+
+				
+				
 			} else {
 				System.err.println("No file specified");
 				System.exit(1);
@@ -50,7 +65,7 @@ public class BwlBpmnToWdgCompiler {
 
 				Map<String, List<String>> functionList = FunctionConverter.generateWDGFunctions(bpmnParser, startNode.getId());
 
-				Map<String, List<String>> codeMap = CodeConverter.generateWDGFunctionCode(startNode.getId(), bpmnParser);
+				Map<String, List<String>> codeMap = CodeConverter.generateWDGFunctionCode(startNode.getId(), bpmnParser, generateFromDoc);
 
 				outputFileName =  startNode.getName();
 				WalWriter.writeWDGFile(outputFileName, functionList, codeMap);
