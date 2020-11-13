@@ -50,6 +50,9 @@ public class CodeConverter {
 			case TASK:
 				generateTaskCode(bpmnParser, task, parentTask, generateFromDoc);
 				break;
+			case METABOT:
+				generateMetabotCode(bpmnParser, task, parentTask, generateFromDoc);
+				break;
 			case GATEWAY:
 				generateGatewayCode(bpmnParser, task, parentTask, generateFromDoc);
 				break;
@@ -65,14 +68,13 @@ public class CodeConverter {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 		String parentName = getParentName(parentTask);
 
-		String doc = getProcessDocumentation(task, bpmnParser);
+		if (generateFromDoc) {
 
-		if (doc != null) {
+			String doc = getProcessDocumentation(task, bpmnParser);
+
 			addCode(CodePlacement.MAIN.toString(), doc);
 			addCode(CodePlacement.DEFVARS.toString(), null);
-		}
 
-		if (generateFromDoc) {
 			doc = getDocumentation(task);
 			addCode(name, doc);
 		} else {
@@ -98,9 +100,27 @@ public class CodeConverter {
 		}
 
 		generateCodeRecursive(bpmnParser, task, generateFromDoc);
-
 	}
 
+	private static void generateMetabotCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean generateFromDoc) {
+
+		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
+		String parentName = getParentName(parentTask);
+
+		if (generateFromDoc) {
+			String doc = getDocumentation(task);
+			addCode(name, doc);
+		} else {
+			String execScript = "executeScript --name " + name;
+			addCode(parentName, execScript);
+			
+			String gosubStr = "goSub --label " + name;
+			addCode(parentName, gosubStr);
+		}
+
+		generateCodeRecursive(bpmnParser, task, generateFromDoc);
+	}
+	
 	private static void generateSubprocessCode(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean generateFromDoc) {
 		String name = StringUtils.convertToTitleCaseIteratingChars(task.getName());
 		String parentName = getParentName(parentTask);
@@ -112,9 +132,8 @@ public class CodeConverter {
 			String execScript = "executeScript --isfromfile  --filename " + name + ".wal";
 			addCode(parentName, execScript);
 		}
-	
-		generateCodeRecursive(bpmnParser, task, parentTask, generateFromDoc);
 
+		generateCodeRecursive(bpmnParser, task, parentTask, generateFromDoc);
 	}
 
 	private static void generateCodeRecursive(BwlBpmnParser bpmnParser, BpmnTask task, BpmnTask parentTask, boolean generateFromDoc) {

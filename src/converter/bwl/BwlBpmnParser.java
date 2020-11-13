@@ -73,7 +73,7 @@ public class BwlBpmnParser {
 		getTasksGeneric(nList);		
 		
 		nList = doc.getElementsByTagName("callActivity");
-		getTasksGeneric(nList);		
+		getLinkedTasks(nList);		
 	}
 
 	private void getTasksGeneric(NodeList nList) {
@@ -95,7 +95,59 @@ public class BwlBpmnParser {
 			}
 		}
 	}
+	
+	private void setTaskNodeAttributes(String name, String id, NodeList childNodes) {
 
+		String documentation = "";
+		BpmnTask task = new BpmnTask();
+
+		for (int i = 0; i < childNodes.getLength(); i++) {
+			Node link = childNodes.item(i);
+
+			if (link.getNodeType() == Node.ELEMENT_NODE) {
+				if (link.getNodeName().equals("documentation")) {
+					documentation = link.getTextContent();
+				}
+			}
+		}
+
+		task.setId(id);
+		task.setType(TaskType.TASK);
+		task.setName(name);
+		task.setDocumentation(documentation);
+
+		taskMap.put(id, task);
+	}	
+	
+	private void getLinkedTasks(NodeList nList) {
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+			Node nNode = nList.item(temp);
+
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eElement = (Element) nNode;
+
+				setLinkedNodeAttributes(eElement);
+			}
+		}
+	}
+	
+	private void setLinkedNodeAttributes(Element eElement) {
+
+		String documentation = "";
+		BpmnTask task = new BpmnTask();
+		
+		String name = eElement.getAttribute("name");
+		String id = eElement.getAttribute("id");
+
+		task.setId(id);
+		task.setType(TaskType.METABOT);
+		task.setName(name);
+		task.setDocumentation(documentation);
+
+		taskMap.put(id, task);
+	}		
+	
+	
 	private void getProcesses(Document doc) {
 		NodeList nList = doc.getElementsByTagName("process");
 		// System.out.println("----------------------------");
@@ -184,7 +236,6 @@ public class BwlBpmnParser {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 				Element eElement = (Element) nNode;
 
-				String id = eElement.getAttribute("id");
 				String incomingId = eElement.getAttribute("sourceRef");
 				String outgoingId = eElement.getAttribute("targetRef");
 
@@ -235,30 +286,6 @@ public class BwlBpmnParser {
 		}
 
 		return startNodes;
-	}
-	
-	private void setTaskNodeAttributes(String name, String id, NodeList childNodes) {
-
-		String documentation = "";
-		BpmnTask task = new BpmnTask();
-
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			Node link = childNodes.item(i);
-
-			if (link.getNodeType() == Node.ELEMENT_NODE) {
-				if (link.getNodeName().equals("documentation")) {
-					documentation = link.getTextContent();
-					//System.out.println("Documentation :" + documentation);
-				}
-			}
-		}
-
-		task.setId(id);
-		task.setType(TaskType.TASK);
-		task.setName(name);
-		task.setDocumentation(documentation);
-
-		taskMap.put(id, task);
 	}
 	
 	private void setSubProcessAttributes(String name, String id, NodeList childNodes) {

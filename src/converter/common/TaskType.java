@@ -1,7 +1,7 @@
 package converter.common;
 
 public enum TaskType {
-	START("start"), TASK("task"), GATEWAY("gateway"), SUBPROCESS("subprocess"), END("end");
+	START("start"), TASK("task"), GATEWAY("gateway"), SUBPROCESS("subprocess"), METABOT("metabot"), END("end");
 
 	private String type;
 

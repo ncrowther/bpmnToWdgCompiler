@@ -36,6 +36,7 @@ public class FunctionConverter {
 				generateMainCode(bpmnParser, task);
 				break;
 			case TASK:
+			case METABOT:
 				generateTaskCode(bpmnParser, task);
 				break;
 			case SUBPROCESS:
